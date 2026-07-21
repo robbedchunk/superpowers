@@ -25,9 +25,9 @@ echo "This test executes a real plan using the skill and verifies:"
 echo "  1. Plan is read once (not per task)"
 echo "  2. Full task text provided to subagents"
 echo "  3. Subagents perform self-review"
-echo "  4. Spec compliance review before code quality"
-echo "  5. Review loops when issues found"
-echo "  6. Spec reviewer reads code independently"
+echo "  4. One merge-gate review per task gates merging"
+echo "  5. Bounded review loops when issues found"
+echo "  6. Reviewer reads code independently"
 echo ""
 echo "WARNING: This test may take 10-30 minutes to complete."
 echo ""
@@ -55,64 +55,69 @@ EOF
 
 mkdir -p src test docs/superpowers/plans
 
-# Create a simple implementation plan
+# Create a simple implementation plan (brief format: requirements and
+# acceptance tests, no implementation bodies; Task 2 depends on Task 1
+# because they share files)
 cat > docs/superpowers/plans/implementation-plan.md <<'EOF'
 # Test Implementation Plan
 
-This is a minimal plan to test the subagent-driven-development workflow.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development to implement this plan task-by-task. Tasks declare `Depends on:` — execute in an order that satisfies dependencies.
 
-## Task 1: Create Add Function
+**Goal:** A tiny math module, built through the subagent-driven-development workflow.
 
-Create a function that adds two numbers.
+**Architecture:** Single ES module exporting pure functions, with a test suite run by `npm test`.
 
-**File:** `src/math.js`
+**Tech Stack:** Node.js
+
+## Global Constraints
+
+- Only the functions named in tasks may be exported — no extra features (no divide, power, subtract, etc.)
+
+---
+
+### Task 1: Add Function
+
+**Depends on:** none
+
+**Files:**
+- Create: `src/math.js`
+- Test: `test/math.test.js`
+
+**Interfaces:**
+- Produces: `add(a, b)` — exported from `src/math.js`, returns the sum of `a` and `b`
 
 **Requirements:**
-- Function named `add`
-- Takes two parameters: `a` and `b`
-- Returns the sum of `a` and `b`
-- Export the function
+- Export a function named `add` that takes two parameters `a` and `b` and returns their sum
 
-**Implementation:**
-```javascript
-export function add(a, b) {
-  return a + b;
-}
-```
-
-**Tests:** Create `test/math.test.js` that verifies:
+**Acceptance tests** — described, not coded:
 - `add(2, 3)` returns `5`
 - `add(0, 0)` returns `0`
 - `add(-1, 1)` returns `0`
 
-**Verification:** `npm test`
+**Done when:** acceptance tests pass via `npm test`; work committed.
 
-## Task 2: Create Multiply Function
+### Task 2: Multiply Function
 
-Create a function that multiplies two numbers.
+**Depends on:** Task 1
 
-**File:** `src/math.js` (add to existing file)
+**Files:**
+- Modify: `src/math.js`
+- Modify: `test/math.test.js`
+
+**Interfaces:**
+- Consumes: the existing exports of `src/math.js` (leave `add` unchanged)
+- Produces: `multiply(a, b)` — exported from `src/math.js`, returns the product of `a` and `b`
 
 **Requirements:**
-- Function named `multiply`
-- Takes two parameters: `a` and `b`
-- Returns the product of `a` and `b`
-- Export the function
+- Export a function named `multiply` that takes two parameters `a` and `b` and returns their product
 - DO NOT add any extra features (like power, divide, etc.)
 
-**Implementation:**
-```javascript
-export function multiply(a, b) {
-  return a * b;
-}
-```
-
-**Tests:** Add to `test/math.test.js`:
+**Acceptance tests** — described, not coded:
 - `multiply(2, 3)` returns `6`
 - `multiply(0, 5)` returns `0`
 - `multiply(-2, 3)` returns `-6`
 
-**Verification:** `npm test`
+**Done when:** all acceptance tests pass via `npm test` (including Task 1's); work committed.
 EOF
 
 # Initialize git repo
@@ -138,8 +143,8 @@ IMPORTANT: Follow the skill exactly. I will be verifying that you:
 1. Read the plan once at the beginning
 2. Provide full task text to subagents (don't make them read files)
 3. Ensure subagents do self-review before reporting
-4. Run spec compliance review before code quality review
-5. Use review loops when issues are found
+4. Run one merge-gate review per task before merging it
+5. When a review blocks, dispatch a fix and a ratcheted re-review (two rounds max)
 
 Begin now. Execute the plan.
 EOF
@@ -152,8 +157,8 @@ IMPORTANT: Follow the skill exactly. I will be verifying that you:
 1. Read the plan once at the beginning
 2. Provide full task text to subagents (don't make them read files)
 3. Ensure subagents do self-review before reporting
-4. Run spec compliance review before code quality review
-5. Use review loops when issues are found
+4. Run one merge-gate review per task before merging it
+5. When a review blocks, dispatch a fix and a ratcheted re-review (two rounds max)
 
 Begin now. Execute the plan."
 
@@ -286,10 +291,10 @@ else
 fi
 echo ""
 
-# Test 8: Check for extra features (spec compliance should catch)
-echo "Test 8: No extra features added (spec compliance)..."
+# Test 8: Check for extra features (merge-gate review should catch)
+echo "Test 8: No extra features added (merge-gate review)..."
 if grep -q "export function divide\|export function power\|export function subtract" "$TEST_PROJECT/src/math.js" 2>/dev/null; then
-    echo "  [WARN] Extra features found (spec review should have caught this)"
+    echo "  [WARN] Extra features found (merge-gate review should have caught this)"
     # Not failing on this as it tests reviewer effectiveness
 else
     echo "  [PASS] No extra features added"
@@ -318,8 +323,8 @@ if [ $FAILED -eq 0 ]; then
     echo "  ✓ Reads plan once at start"
     echo "  ✓ Provides full task text to subagents"
     echo "  ✓ Enforces self-review"
-    echo "  ✓ Runs spec compliance before code quality"
-    echo "  ✓ Spec reviewer verifies independently"
+    echo "  ✓ Runs a merge-gate review per task"
+    echo "  ✓ Reviewer verifies independently"
     echo "  ✓ Produces working implementation"
     exit 0
 else

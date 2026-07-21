@@ -36,14 +36,20 @@ fi
 
 echo ""
 
-# Test 2: Verify skill describes correct workflow order
-echo "Test 2: Workflow ordering..."
+# Test 2: Verify skill describes the merge-gate review
+echo "Test 2: Merge-gate review..."
 
-output=$(run_claude "In the subagent-driven-development skill, what comes first: spec compliance review or code quality review? Answer using exactly this structure:
-First: <review type>
-Second: <review type>" "$CLAUDE_PROMPT_TIMEOUT")
+output=$(run_claude "In the subagent-driven-development skill, how many reviewer subagents are dispatched per task, and what single question does that per-task review answer? Answer using exactly this structure:
+Reviewers per task: <number>
+Question: <the question>" "$CLAUDE_PROMPT_TIMEOUT")
 
-if assert_order "$output" "First:.*spec.*compliance" "Second:.*code.*quality" "Spec compliance before code quality"; then
+if assert_contains "$output" "Reviewers per task:.*one\|Reviewers per task:.*1\|Reviewers per task:.*single" "One reviewer per task"; then
+    : # pass
+else
+    exit 1
+fi
+
+if assert_contains "$output" "block.*merge\|merge.*block" "Review answers the merge-blocking question"; then
     : # pass
 else
     exit 1
@@ -91,10 +97,10 @@ fi
 
 echo ""
 
-# Test 5: Verify spec compliance reviewer is skeptical
-echo "Test 5: Spec compliance reviewer mindset..."
+# Test 5: Verify merge-gate reviewer is skeptical
+echo "Test 5: Merge-gate reviewer mindset..."
 
-output=$(run_claude "What is the spec compliance reviewer's attitude toward the implementer's report in subagent-driven-development?" "$CLAUDE_PROMPT_TIMEOUT")
+output=$(run_claude "What is the merge-gate reviewer's attitude toward the implementer's report in subagent-driven-development?" "$CLAUDE_PROMPT_TIMEOUT")
 
 if assert_contains "$output" "not trust\|don't trust\|skeptical\|verify.*independently\|suspiciously" "Reviewer is skeptical"; then
     : # pass
@@ -121,7 +127,13 @@ else
     exit 1
 fi
 
-if assert_contains "$output" "implementer.*fix\|fix.*issues" "Implementer fixes issues"; then
+if assert_contains "$output" "implementer.*fix\|fix.*issues\|fix subagent" "Fixes dispatched for blocking findings"; then
+    : # pass
+else
+    exit 1
+fi
+
+if assert_contains "$output" "bounded\|escalat\|two.*round\|2.*round\|maximum\|max" "Loop is bounded"; then
     : # pass
 else
     exit 1
