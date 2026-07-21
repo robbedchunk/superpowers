@@ -1,22 +1,23 @@
-# Task Reviewer Prompt Template
+# Merge-Gate Reviewer Prompt Template
 
-Use this template when dispatching a task reviewer subagent. The reviewer
-reads the task's diff once and returns two verdicts: spec compliance and
-code quality.
+Use this template when dispatching the merge-gate reviewer for one task.
+The reviewer reads the task's diff once and answers one question: would you
+block this merge?
 
-**Purpose:** Verify one task's implementation matches its requirements (nothing
-more, nothing less) and is well-built (clean, tested, maintainable)
+**Purpose:** Catch what would make merging this task a mistake — a missed
+or misbuilt requirement, a harmful addition, a defect that causes real
+problems. Everything else is an observation for the final whole-branch
+review, not a reason to hold the merge.
 
 ```
 Subagent (general-purpose):
-  description: "Review Task N (spec + quality)"
+  description: "Merge-gate review, Task N"
   model: [MODEL — REQUIRED: choose per SKILL.md Model Selection; an omitted
-         model silently inherits the session's most expensive one]
+         model silently inherits the session's model]
   prompt: |
-    You are reviewing one task's implementation: first whether it matches its
-    requirements, then whether it is well-built. This is a task-scoped gate,
-    not a merge review — a broad whole-branch review happens separately after
-    all tasks are complete.
+    You are the merge gate for one task. Answer one question: would you
+    block this merge? This is a task-scoped gate, not a branch review — a
+    broad whole-branch review happens separately after all tasks merge.
 
     ## What Was Requested
 
@@ -63,8 +64,8 @@ Subagent (general-purpose):
 
     ## Tests
 
-    The implementer already ran the tests and reported results with TDD
-    evidence for exactly this code. Do not re-run the suite to confirm their
+    The implementer already ran the tests, lint, and typecheck and reported
+    results for exactly this code. Do not re-run the suite to confirm their
     report. Run a test only when reading the code raises a specific doubt
     that no existing run answers — and then a focused test, never a
     package-wide suite, race detector run, or repeated/high-count loop. If
@@ -72,97 +73,92 @@ Subagent (general-purpose):
     running it. If you cannot run commands in this environment, name the
     test you would run.
 
-    Warnings or other noise in the implementer's reported test output are
-    findings — test output should be pristine.
+    Pristine output is the standard: noise in the reported test output that
+    could mask a real failure blocks; other warnings and noise are
+    observations.
 
-    ## Part 1: Spec Compliance
+    ## What Blocks a Merge
 
-    Compare the diff against What Was Requested:
+    Judge the diff on two axes, one verdict.
 
-    - **Missing:** requirements they skipped, missed, or claimed without
-      implementing
-    - **Extra:** features that weren't requested, over-engineering, unneeded
-      "nice to haves"
-    - **Misunderstood:** right feature built the wrong way, wrong problem
-      solved
+    **Fidelity** — compare against the brief:
+    - A requirement that is missing, incomplete, or misunderstood
+    - A violated Global Constraint
+    - A broken Produces contract — later tasks are planned against those
+      exact names and types
+    - Unrequested additions that expand the public surface or change
+      behavior nobody asked for (a harmless internal extra is an
+      observation; an unrequested flag, endpoint, or behavior change
+      blocks)
+
+    **Soundness** — will this cause real problems:
+    - Incorrect or fragile logic, swallowed errors, data loss, security
+      holes
+    - Tests that assert nothing, or that mock away the behavior under test
+    - Maintainability damage you would block a human PR over — e.g.
+      verbatim duplication of a logic block
+
+    If the brief itself mandates something this rubric blocks, that IS a
+    blocking finding — label it **brief-mandated**; the controller takes it
+    to the human. The plan's authorship does not grade its own work.
 
     If a requirement cannot be verified from this diff alone (it lives in
     unchanged code or spans tasks), report it as a ⚠️ item instead of
     broadening your search.
 
-    ## Part 2: Code Quality
-
-    **Code quality:**
-    - Clean separation of concerns?
-    - Proper error handling?
-    - DRY without premature abstraction?
-    - Edge cases handled?
-
-    **Tests:**
-    - Do the new and changed tests verify real behavior, not mocks?
-    - Are the task's edge cases covered?
-
-    **Structure:**
-    - Does each file have one clear responsibility with a well-defined interface?
-    - Are units decomposed so they can be understood and tested independently?
-    - Is the implementation following the file structure from the plan?
-    - Did this change create new files that are already large, or
-      significantly grow existing files? (Don't flag pre-existing file
-      sizes — focus on what this change contributed.)
-
-    Your report should point at evidence: file:line references for every
-    finding and for any check you would otherwise answer with a bare
-    "yes." A tight report that cites lines gives the controller everything
-    it needs.
-
-    Your final message is the report itself: begin directly with the
-    spec-compliance verdict. Every line is a verdict, a finding with
-    file:line, or a check you ran — no preamble, no process narration,
-    no closing summary.
-
-    ## Calibration
-
-    Categorize issues by actual severity. Not everything is Critical.
-    Important means this task cannot be trusted until it is fixed: incorrect
-    or fragile behavior, a missed requirement, or maintainability damage you
-    would block a merge over — verbatim duplication of a logic block,
-    swallowed errors, tests that assert nothing. "Coverage could be broader"
-    and polish suggestions are Minor.
-    If the plan or brief explicitly mandates something this rubric calls a
-    defect (a test that asserts nothing, verbatim duplication of a logic
-    block), that IS a finding — report it as Important, labeled
-    plan-mandated. The plan's authorship does not grade its own work; the
-    human decides.
-    Acknowledge what was done well before listing issues — accurate praise
-    helps the implementer trust the rest of the feedback.
+    **Not blocking:** style preferences, broader-coverage suggestions,
+    polish, refactors that don't fix a real problem, pre-existing issues
+    the diff didn't create. Report them as Observations — the final
+    whole-branch review triages them; no per-task fix will be dispatched.
+    Do not pad the blocking list to seem thorough: an empty blocking list
+    from a reviewer who read the diff is a strong, useful verdict.
 
     ## Output Format
 
-    ### Spec Compliance
+    Your final message is the report itself: begin directly with the
+    verdict line. Every line is the verdict, a finding with file:line, or
+    a check you ran — no preamble, no process narration, no closing
+    summary.
 
-    - ✅ Spec compliant | ❌ Issues found: [what's missing/extra/misunderstood,
-      with file:line references]
-    - ⚠️ Cannot verify from diff: [requirements you could not verify from the
-      diff alone, and what the controller should check — report alongside the
-      ✅/❌ verdict for everything you could verify]
+    **Verdict:** APPROVE — merge | BLOCK — findings below
+
+    ### Blocking Findings
+    [Numbered. For each: file:line, what's wrong, why it justifies holding
+    the merge, how to fix (if not obvious).]
+
+    ### ⚠️ Cannot Verify From Diff
+    [Requirements you could not verify from the diff alone, and what the
+    controller should check.]
+
+    ### Observations
+    [Non-blocking notes, one line each with file:line.]
 
     ### Strengths
-    [What's well done? Be specific.]
+    [What's well done, briefly — accurate praise helps the implementer
+    trust the rest.]
+```
 
-    ### Issues
+## Re-Review Variant
 
-    #### Critical (Must Fix)
-    #### Important (Should Fix)
-    #### Minor (Nice to Have)
+After a fix dispatch, re-dispatch the reviewer with the same file paths
+plus this block appended to the prompt. The report file now contains the
+fix report; [FIX_SHAS] are the commits the fix added.
 
-    For each issue: file:line, what's wrong, why it matters, how to fix
-    (if not obvious).
+```
+    ## This Is a Re-Review — Round [K] of 2
 
-    ### Assessment
+    Prior blocking findings under re-check:
+    [numbered list, copied verbatim from the last review]
 
-    **Task quality:** [Approved | Needs fixes]
-
-    **Reasoning:** [1-2 sentence technical assessment]
+    The ratchet:
+    - Re-check ONLY the findings above, plus the code the fix touched
+      (fix commits: [FIX_SHAS]; the fix report is appended to the report
+      file).
+    - For each prior finding, report RESOLVED or STILL BLOCKED, with
+      evidence.
+    - You may raise a NEW blocking finding only in code the fix changed.
+      Code you already passed is out of scope — do not re-open it, and do
+      not re-review the rest of the diff.
 ```
 
 **Placeholders:**
@@ -174,15 +170,18 @@ Subagent (general-purpose):
   and stated relationships between components (not process rules — those
   are already in this template)
 - `[REPORT_FILE]` — REQUIRED: the file the implementer wrote its detailed
-  report to
+  report to (fix reports are appended to it)
 - `[BASE_SHA]` — commit before this task
 - `[HEAD_SHA]` — current commit
 - `[DIFF_FILE]` — REQUIRED: the path the controller wrote the review
   package to (`scripts/review-package BASE HEAD` prints the unique path it
   wrote; the package never enters the controller's context)
+- `[FIX_SHAS]` — re-reviews only: the commits the fix subagent added
+- `[K]` — re-reviews only: 1 or 2; there is no round 3 — a blocker that
+  survives round 2 escalates to the human
 
-**Reviewer returns:** Spec Compliance verdict (✅/❌/⚠️), Strengths, Issues
-(Critical/Important/Minor), Task quality verdict
+**Reviewer returns:** Verdict (APPROVE | BLOCK), Blocking Findings,
+⚠️ Cannot Verify From Diff, Observations, Strengths
 
-A fix dispatch can address spec gaps and quality findings together;
-re-review after fixes covers both verdicts.
+One fix dispatch addresses all blocking findings together; the ratcheted
+re-review confirms each RESOLVED without re-opening passed code.
