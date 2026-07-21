@@ -19,10 +19,12 @@ Subagent (general-purpose):
 
     | Category | What to Look For |
     |----------|------------------|
-    | Completeness | TODOs, placeholders, incomplete tasks, missing steps |
+    | Completeness | TODOs, placeholders, incomplete tasks, untestable requirements |
     | Spec Alignment | Plan covers spec requirements, no major scope creep |
-    | Task Decomposition | Tasks have clear boundaries, steps are actionable |
-    | Buildability | Could an engineer follow this plan without getting stuck? |
+    | Task Decomposition | Tasks have clear boundaries, testable requirements, declared dependencies |
+    | Graph Sanity | No dependency cycles; tasks with no dependency path between them share no files; every Consumes traces to a Produces or to existing code |
+    | Contract Discipline | Code blocks are contracts only (API shapes, wire formats, DDL, pinned copy) — no implementation bodies |
+    | Buildability | Could an engineer implement each task from its Requirements and acceptance tests without getting stuck? |
 
     ## Calibration
 
@@ -40,7 +42,7 @@ Subagent (general-purpose):
     **Status:** Approved | Issues Found
 
     **Issues (if any):**
-    - [Task X, Step Y]: [specific issue] - [why it matters for implementation]
+    - [Task X]: [specific issue] - [why it matters for implementation]
 
     **Recommendations (advisory, do not block approval):**
     - [suggestions for improvement]
