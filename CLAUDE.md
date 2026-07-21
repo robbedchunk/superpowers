@@ -6,10 +6,10 @@ This fork intentionally disables automatic Superpowers activation. Never invoke 
 Superpowers workflow merely because it matches the task, and never restore a
 session-start mandate that requires agents to select relevant skills.
 
-- A current user request that explicitly says to use Superpowers enables relevant
-  suite workflows for that request.
-- A request that names one `superpowers:<workflow>` enables only that workflow;
-  do not chain to others without separate permission.
+- A current user request that explicitly says to use Superpowers enables the
+  initial relevant workflow for that request.
+- Before chaining to another Superpowers workflow, ask the user unless they have
+  already explicitly authorized chaining for the current request.
 - Installation, conversation startup, and task relevance are not opt-in.
 - Keep `tests/codex/test-opt-in-skills.sh` passing when adding or editing skills.
 

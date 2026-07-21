@@ -44,6 +44,11 @@ for path in skill_paths:
     body = match.group("body")
     if "<OPT-IN-BOUNDARY>" not in body or "</OPT-IN-BOUNDARY>" not in body:
         errors.append(f"{path}: missing runtime OPT-IN-BOUNDARY")
+    if (
+        "Ask for permission before invoking another Superpowers workflow unless "
+        "the user has already explicitly authorized chaining."
+    ) not in body:
+        errors.append(f"{path}: missing explicit chaining-consent rule")
 
 bootstrap = (repo_root / "skills" / "using-superpowers" / "SKILL.md").read_text(
     encoding="utf-8"
@@ -56,7 +61,7 @@ for forbidden in (
     if forbidden in bootstrap:
         errors.append(f"using-superpowers retains automatic trigger language: {forbidden!r}")
 
-for required in ("Suite-wide opt-in", "Single-workflow opt-in"):
+for required in ("Suite-wide opt-in", "Single-workflow opt-in", "Chaining permission"):
     if required not in bootstrap:
         errors.append(f"using-superpowers is missing the {required!r} rule")
 

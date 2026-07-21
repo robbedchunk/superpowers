@@ -23,7 +23,7 @@ After you've signed off on the design, your agent puts together an implementatio
 
 Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for your agent to work autonomously for a couple hours at a time without deviating from the plan you put together.
 
-There's a bunch more to it, but that's the core of the system. Skills never trigger from task relevance alone: say "use Superpowers" for suite-wide workflow selection, or name a specific `superpowers:<workflow>` to run only that workflow.
+There's a bunch more to it, but that's the core of the system. Skills never trigger from task relevance alone: say "use Superpowers" or name a specific `superpowers:<workflow>` to start. Before moving into another workflow, the agent asks unless you already said chaining is fine.
 
 ## Commercial Services
 
@@ -188,7 +188,7 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 
 ## The Basic Workflow
 
-After you explicitly ask to use Superpowers, a typical suite-wide workflow is:
+After you explicitly ask to use Superpowers and approve chaining, a typical suite-wide workflow is:
 
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
 
