@@ -27,11 +27,15 @@ Load plan, review critically, execute all tasks, report when complete.
 
 ### Step 2: Execute Tasks
 
-For each task:
+Execute tasks in an order that satisfies each task's `Depends on:` — inline
+execution is sequential, so dependencies simply constrain the order. For
+each task:
 1. Mark as in_progress
-2. Follow each step exactly (plan has bite-sized steps)
-3. Run verifications as specified
-4. Mark as completed
+2. Implement to the task's Requirements and acceptance tests, honoring its
+   Interfaces and contract code exactly (follow superpowers:test-driven-development)
+3. Meet the task's "Done when" gates: acceptance tests pass, full suite
+   green, lint and typecheck clean
+4. Commit and mark as completed
 
 ### Step 3: Complete Development
 
@@ -60,8 +64,8 @@ After all tasks complete and verified:
 
 ## Remember
 - Review plan critically first
-- Follow plan steps exactly
-- Don't skip verifications
+- Honor each task's contracts and dependency order exactly
+- Don't skip the "Done when" gates
 - Reference skills when plan says to
 - Stop when blocked, don't guess
 - Never start implementation on main/master branch without explicit user consent
