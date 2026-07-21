@@ -21,31 +21,37 @@ Subagent (general-purpose):
 
     ## Before You Begin
 
-    If you have questions about:
-    - The requirements or acceptance criteria
-    - The approach or implementation strategy
-    - Dependencies or assumptions
-    - Anything unclear in the task description
+    Read the brief. If something genuinely blocks correct implementation —
+    a contradictory requirement, an ambiguous contract, a missing
+    interface — ask now or report NEEDS_CONTEXT. Otherwise proceed: local
+    implementation decisions (naming, private structure, algorithm choice
+    within the brief's constraints) are yours to make. Note the significant
+    ones in your report. Do not escalate decisions the brief already made
+    or ones your tools can settle.
 
-    **Ask them now.** Raise any concerns before starting work.
+    Interfaces and contract code are different: if the brief's Produces
+    signatures or contract code cannot work as specified, stop and report —
+    later tasks are planned against those exact shapes. Never deviate from
+    a contract silently.
 
     ## Your Job
 
-    Once you're clear on requirements:
-    1. Implement exactly what the task specifies
-    2. Write tests (following TDD if task says to)
-    3. Verify implementation works
+    1. Implement what the brief requires
+    2. Write real tests for the brief's acceptance criteria (follow
+       superpowers:test-driven-development)
+    3. Run the gates: while iterating, the focused test for what you're
+       changing; before committing, the full suite plus lint and
+       typecheck — all clean, output pristine
     4. Commit your work
     5. Self-review (see below)
     6. Report back
 
     Work from: [directory]
 
-    **While you work:** If you encounter something unexpected or unclear, **ask questions**.
-    It's always OK to pause and clarify. Don't guess or make assumptions.
-
-    While iterating, run the focused test for what you're changing; run the
-    full suite once before committing, not after every edit.
+    **While you work:** make reasonable local calls and note them in your
+    report. If a requirement or contract turns out to be genuinely
+    ambiguous or contradictory, pause and ask — don't guess on anything
+    another task depends on.
 
     ## Code Organization
 
@@ -114,8 +120,9 @@ Subagent (general-purpose):
 
     Write your full report to [REPORT_FILE]:
     - What you implemented (or what you attempted, if blocked)
-    - What you tested and test results
-    - **TDD Evidence** (if TDD was required for this task):
+    - What you tested; test, lint, and typecheck results
+    - Local decisions you made that the brief left open
+    - **TDD Evidence** (for the tests you wrote):
       - RED: command run, relevant failing output before implementation, and why the failure was expected
       - GREEN: command run and relevant passing output after implementation
     - Files changed
@@ -126,7 +133,7 @@ Subagent (general-purpose):
     report file):
     - **Status:** DONE | DONE_WITH_CONCERNS | BLOCKED | NEEDS_CONTEXT
     - Commits created (short SHA + subject)
-    - One-line test summary (e.g. "14/14 passing, output pristine")
+    - One-line gate summary (e.g. "14/14 passing, lint clean, typecheck clean")
     - Your concerns, if any
     - The report file path
 
