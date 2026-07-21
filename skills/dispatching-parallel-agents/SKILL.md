@@ -1,7 +1,11 @@
 ---
 name: dispatching-parallel-agents
-description: Use when facing 2+ independent tasks that can be worked on without shared state or sequential dependencies
+description: "Opt-in only: Use when the user explicitly opts into Superpowers for the current request and there are multiple independent tasks, or explicitly names superpowers:dispatching-parallel-agents. Never auto-invoke from task relevance alone."
 ---
+
+<OPT-IN-BOUNDARY>
+Use this workflow only when the current user request explicitly opts into Superpowers or explicitly names `superpowers:dispatching-parallel-agents`. Task relevance alone is never permission. If the user named only this workflow, do not invoke other Superpowers workflows unless they separately request them.
+</OPT-IN-BOUNDARY>
 
 # Dispatching Parallel Agents
 

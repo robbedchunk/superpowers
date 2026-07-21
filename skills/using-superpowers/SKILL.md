@@ -1,53 +1,33 @@
 ---
 name: using-superpowers
-description: Use when starting any conversation - establishes how to find and use skills, requiring skill invocation before ANY response including clarifying questions
+description: "Opt-in only: Use when the user explicitly asks to use Superpowers for the current request, asks how Superpowers works, or explicitly names superpowers:using-superpowers. Never auto-invoke at conversation start or from task relevance alone."
 ---
 
+<OPT-IN-BOUNDARY>
+Superpowers is explicitly opt-in. Installing the plugin, starting a conversation, or noticing that a workflow might be relevant is never permission to invoke it.
+
+- **Suite-wide opt-in:** If the current user request clearly asks to use Superpowers, select and invoke the relevant Superpowers workflows for that request.
+- **Single-workflow opt-in:** If the user names only one `superpowers:<workflow>`, invoke only that workflow. Do not chain into other Superpowers workflows unless the user separately names them or expands the request to Superpowers generally.
+- **No opt-in:** If the current user request does not explicitly ask for Superpowers or name a Superpowers workflow, do not invoke any Superpowers skill.
+
+Opt-in applies to the current request. Do not silently turn it into a default for later requests.
+</OPT-IN-BOUNDARY>
+
 <SUBAGENT-STOP>
-If you were dispatched as a subagent to execute a specific task, ignore this skill.
+If you were dispatched as a subagent to execute a specific task, ignore this skill unless the dispatch prompt explicitly opts into Superpowers.
 </SUBAGENT-STOP>
 
-<EXTREMELY-IMPORTANT>
-If you think there is even a 1% chance a skill might apply to what you are doing, you ABSOLUTELY MUST invoke the skill.
+## When Activated
 
-IF A SKILL APPLIES TO YOUR TASK, YOU DO NOT HAVE A CHOICE. YOU MUST USE IT.
+After explicit opt-in, announce "Using [skill] to [purpose]" and follow the selected workflow exactly. If it has a checklist, create a todo per item.
 
-This is not negotiable. You cannot rationalize your way out of this.
-</EXTREMELY-IMPORTANT>
+When the user opts into the suite generally and multiple workflows apply, process skills come first because they set the approach, followed by implementation skills.
 
-## The Rule
+Examples:
 
-**Invoke relevant or requested skills BEFORE any response or action** — including clarifying questions, exploring the codebase, or checking files. If it turns out wrong for the situation, you don't have to use it.
-
-**Before entering plan mode:** if you haven't already brainstormed, invoke the brainstorming skill first.
-
-Then announce "Using [skill] to [purpose]" and follow the skill exactly. If it has a checklist, create a todo per item.
-
-## Skill Priority
-
-When multiple skills apply, process skills come first — they set the approach, then implementation skills (frontend-design, etc.) carry it out. Brainstorming and systematic-debugging are Superpowers' most common process skills, but the rule holds for any of them.
-
-- "Let's build X" → superpowers:brainstorming first, then implementation skills.
-- "Fix this bug" → superpowers:systematic-debugging first, then domain skills.
-
-## Red Flags
-
-These thoughts mean STOP—you're rationalizing:
-
-| Thought | Reality |
-|---------|---------|
-| "This is just a simple question" | Questions are tasks. Check for skills. |
-| "I need more context first" | Skill check comes BEFORE clarifying questions. |
-| "Let me explore the codebase first" | Skills tell you HOW to explore. Check first. |
-| "I can check git/files quickly" | Files lack conversation context. Check for skills. |
-| "Let me gather information first" | Skills tell you HOW to gather information. |
-| "This doesn't need a formal skill" | If a skill exists, use it. |
-| "I remember this skill" | Skills evolve. Read current version. |
-| "This doesn't count as a task" | Action = task. Check for skills. |
-| "The skill is overkill" | Simple things become complex. Use it. |
-| "I'll just do this one thing first" | Check BEFORE doing anything. |
-| "This feels productive" | Undisciplined action wastes time. Skills prevent this. |
-| "I know what that means" | Knowing the concept ≠ using the skill. Invoke it. |
+- "Use Superpowers to build X" permits `superpowers:brainstorming` and later relevant workflows for that request.
+- "Use superpowers:systematic-debugging for this bug" permits only `superpowers:systematic-debugging` until the user opts into another workflow.
+- "Fix this bug" does not opt into Superpowers. Handle it without Superpowers workflows.
 
 ## Platform Adaptation
 
@@ -59,4 +39,4 @@ If your harness appears here, read its reference file for special instructions:
 
 ## User Instructions
 
-User instructions (CLAUDE.md, AGENTS.md, GEMINI.md, etc, direct requests) take precedence over skills, which in turn override default behavior. Only skip skill workflows or instructions when your human partner has explicitly told you to.
+User instructions (CLAUDE.md, AGENTS.md, GEMINI.md, etc, direct requests) take precedence over skills. Superpowers workflows apply only within the explicit opt-in boundary above.

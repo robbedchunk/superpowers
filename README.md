@@ -1,6 +1,6 @@
 # Superpowers
 
-Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable skills and some initial instructions that make sure your agent uses them.
+Superpowers is a complete software development methodology for your coding agents, built on top of a set of composable, explicitly invoked skills.
 
 
 ## We're Hiring!
@@ -15,7 +15,7 @@ Give your agent Superpowers: [Claude Code](#claude-code), [Antigravity](#antigra
 
 ## How it works
 
-It starts from the moment you fire up your coding agent. As soon as it sees that you're building something, it *doesn't* just jump into trying to write code. Instead, it steps back and asks you what you're really trying to do. 
+It starts when you explicitly ask your coding agent to use Superpowers. The agent then steps back and asks what you're really trying to do instead of jumping straight into code.
 
 Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
 
@@ -23,7 +23,7 @@ After you've signed off on the design, your agent puts together an implementatio
 
 Next up, once you say "go", it launches a *subagent-driven-development* process, having agents work through each engineering task, inspecting and reviewing their work, and continuing forward. It's not uncommon for your agent to work autonomously for a couple hours at a time without deviating from the plan you put together.
 
-There's a bunch more to it, but that's the core of the system. And because the skills trigger automatically, you don't need to do anything special. Your coding agent just has Superpowers.
+There's a bunch more to it, but that's the core of the system. Skills never trigger from task relevance alone: say "use Superpowers" for suite-wide workflow selection, or name a specific `superpowers:<workflow>` to run only that workflow.
 
 ## Commercial Services
 
@@ -69,8 +69,9 @@ Install Superpowers as a plugin from this repository:
 agy plugin install https://github.com/obra/superpowers
 ```
 
-Antigravity runs the plugin's session-start hook, so Superpowers is active from
-the first message. Reinstall with the same command to update.
+Antigravity runs the plugin's session-start hook to load the opt-in policy, but
+no workflow runs until you explicitly request Superpowers. Reinstall with the
+same command to update.
 
 ### Codex App
 
@@ -187,6 +188,8 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 
 ## The Basic Workflow
 
+After you explicitly ask to use Superpowers, a typical suite-wide workflow is:
+
 1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
 
 2. **using-git-worktrees** - Activates after design approval. Creates isolated workspace on new branch, runs project setup, verifies clean test baseline.
@@ -201,7 +204,7 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 
 7. **finishing-a-development-branch** - Activates when tasks complete. Verifies tests, presents options (merge/PR/keep/discard), cleans up worktree.
 
-**The agent checks for relevant skills before any task.** Mandatory workflows, not suggestions.
+**The agent selects workflows only after explicit opt-in.** Relevance alone never activates Superpowers.
 
 ## What's Inside
 

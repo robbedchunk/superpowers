@@ -1,5 +1,21 @@
 # Superpowers — Contributor Guidelines
 
+## Fork Policy: Superpowers Is Opt-In
+
+This fork intentionally disables automatic Superpowers activation. Never invoke a
+Superpowers workflow merely because it matches the task, and never restore a
+session-start mandate that requires agents to select relevant skills.
+
+- A current user request that explicitly says to use Superpowers enables relevant
+  suite workflows for that request.
+- A request that names one `superpowers:<workflow>` enables only that workflow;
+  do not chain to others without separate permission.
+- Installation, conversation startup, and task relevance are not opt-in.
+- Keep `tests/codex/test-opt-in-skills.sh` passing when adding or editing skills.
+
+This fork policy overrides upstream auto-trigger requirements described later in
+this contributor guide.
+
 ## If You Are an AI Agent
 
 Stop. Read this section before doing anything.

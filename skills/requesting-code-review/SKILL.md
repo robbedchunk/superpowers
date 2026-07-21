@@ -1,7 +1,11 @@
 ---
 name: requesting-code-review
-description: Use when completing tasks, implementing major features, or before merging to verify work meets requirements
+description: "Opt-in only: Use when the user explicitly opts into Superpowers for the current request and wants a structured code review, or explicitly names superpowers:requesting-code-review. Never auto-invoke from task relevance alone."
 ---
+
+<OPT-IN-BOUNDARY>
+Use this workflow only when the current user request explicitly opts into Superpowers or explicitly names `superpowers:requesting-code-review`. Task relevance alone is never permission. If the user named only this workflow, do not invoke other Superpowers workflows unless they separately request them.
+</OPT-IN-BOUNDARY>
 
 # Requesting Code Review
 

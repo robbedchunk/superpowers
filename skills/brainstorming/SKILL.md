@@ -1,7 +1,11 @@
 ---
 name: brainstorming
-description: "You MUST use this before any creative work - creating features, building components, adding functionality, or modifying behavior. Explores user intent, requirements and design before implementation."
+description: "Opt-in only: Use when the user explicitly opts into Superpowers for the current request and wants to explore intent, requirements, or design before creative work, or explicitly names superpowers:brainstorming. Never auto-invoke from task relevance alone."
 ---
+
+<OPT-IN-BOUNDARY>
+Use this workflow only when the current user request explicitly opts into Superpowers or explicitly names `superpowers:brainstorming`. Task relevance alone is never permission. If the user named only this workflow, do not invoke other Superpowers workflows unless they separately request them.
+</OPT-IN-BOUNDARY>
 
 # Brainstorming Ideas Into Designs
 

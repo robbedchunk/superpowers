@@ -1,7 +1,11 @@
 ---
 name: systematic-debugging
-description: Use when encountering any bug, test failure, or unexpected behavior, before proposing fixes
+description: "Opt-in only: Use when the user explicitly opts into Superpowers for the current request and wants systematic investigation of a bug or failure, or explicitly names superpowers:systematic-debugging. Never auto-invoke from task relevance alone."
 ---
+
+<OPT-IN-BOUNDARY>
+Use this workflow only when the current user request explicitly opts into Superpowers or explicitly names `superpowers:systematic-debugging`. Task relevance alone is never permission. If the user named only this workflow, do not invoke other Superpowers workflows unless they separately request them.
+</OPT-IN-BOUNDARY>
 
 # Systematic Debugging
 

@@ -1,7 +1,11 @@
 ---
 name: writing-skills
-description: Use when creating new skills, editing existing skills, or verifying skills work before deployment
+description: "Opt-in only: Use when the user explicitly opts into Superpowers for the current request and wants to create or revise a skill, or explicitly names superpowers:writing-skills. Never auto-invoke from task relevance alone."
 ---
+
+<OPT-IN-BOUNDARY>
+Use this workflow only when the current user request explicitly opts into Superpowers or explicitly names `superpowers:writing-skills`. Task relevance alone is never permission. If the user named only this workflow, do not invoke other Superpowers workflows unless they separately request them.
+</OPT-IN-BOUNDARY>
 
 # Writing Skills
 
