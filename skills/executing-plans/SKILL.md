@@ -23,7 +23,19 @@ Load plan, review critically, execute all tasks, report when complete.
 1. Read plan file
 2. Review critically - identify any questions or concerns about the plan
 3. If concerns: Raise them with your human partner before starting
-4. If no concerns: Create todos for the plan items and proceed
+4. If no concerns: Create the task list (below) and proceed
+
+**Task list.** List existing tasks first — on a resumed session the
+list may already exist; reconcile against the plan and `git log`
+instead of duplicating. Otherwise create one task ("todo") per plan
+task: subject `Task N: <short title>` (under ~60 characters — some
+harnesses re-inject every subject into context repeatedly), description
+a one-line pointer to the plan file and task number, dependencies
+mirroring `Depends on:` where the tracker supports them. The plan
+remains the source of requirements — never copy task content into the
+tracker. The list is a disposable status view: if it is empty or stale
+on resume, rebuild it from the plan, marking tasks whose commits
+already exist in `git log` as completed.
 
 ### Step 2: Execute Tasks
 

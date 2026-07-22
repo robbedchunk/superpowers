@@ -308,6 +308,32 @@ a ledger file, not only in todos.
 - `git clean -fdx` will destroy the ledger (it's git-ignored scratch); if
   that happens, recover from `git log`.
 
+## Native Task List
+
+The harness task list ("todos") is the live, user-facing view of
+progress. It is a projection of the plan — never a second copy of it:
+
+- At skill start, list existing tasks BEFORE creating any — listing is
+  cheap and synchronous, so do it before dispatching any subagent. On a
+  resumed session the list may already exist: reconcile it against the
+  ledger instead of creating duplicates.
+- Create one task per plan task. Subject `Task N: <short title>`, kept
+  under ~60 characters — some harnesses re-inject every subject into
+  context repeatedly, so long subjects are paid for on every turn.
+  Description: a one-line pointer to the plan file and task number.
+  Requirements travel to implementers via `scripts/task-brief`, never
+  via task descriptions — do not paste task content into the tracker.
+- Mirror each task's `Depends on:` as task dependencies when the
+  tracker supports them; otherwise the plan's graph remains the only
+  authority.
+- Flip statuses at the same beat as ledger writes: record the dispatch
+  in the ledger and mark the task in_progress; merge after a clean
+  review and mark it completed.
+- The task list is disposable; the plan and ledger remain the durable
+  record. If the list is empty or stale after a resume, rebuild it from
+  plan + ledger. Never read completion off the task list — the ledger
+  and `git log` are the authority.
+
 ## Prompt Templates
 
 - [implementer-prompt.md](implementer-prompt.md) - Dispatch implementer subagent

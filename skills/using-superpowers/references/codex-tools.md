@@ -9,6 +9,15 @@ multi_agent = true
 
 This enables `spawn_agent`, `wait_agent`, and `close_agent` for skills like `dispatching-parallel-agents` and `subagent-driven-development`. When using subagent-driven-development, you should always close implementer and reviewer subagents when they have finished all their work.
 
+## Task Tracking
+
+When a skill says to create todos or a task list, use `update_plan` —
+Codex's native plan tool (one step per plan task; statuses pending,
+in_progress, completed). Keep it current as tasks complete. It has no
+dependency field and does not persist across sessions: express
+dependency order through step order, and treat the plan document (plus
+any progress ledger) as the durable record.
+
 ## Environment Detection
 
 Skills that create worktrees or finish branches should detect their
