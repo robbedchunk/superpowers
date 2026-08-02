@@ -140,7 +140,8 @@ if [[ "$FORMAT" == "zip" ]]; then
   command -v unzip >/dev/null || die "unzip not found in PATH"
 fi
 
-[[ -d "$REPO_ROOT/.git" ]] || die "repo root is not a git checkout: $REPO_ROOT"
+[[ "$(git -C "$REPO_ROOT" rev-parse --is-inside-work-tree 2>/dev/null)" == "true" ]] ||
+  die "repo root is not a git checkout: $REPO_ROOT"
 git -C "$REPO_ROOT" rev-parse --verify "$REF^{commit}" >/dev/null ||
   die "git ref does not resolve to a commit: $REF"
 
@@ -230,14 +231,16 @@ prepare_metadata_root() {
 
 METADATA_ROOT="$(prepare_metadata_root "$METADATA_SOURCE")"
 
-git -C "$REPO_ROOT" archive --format=tar "$REF" -- \
+# Pin entry modes to 755/644 regardless of local tar.umask config and process
+# umask, so archives are byte-identical across machines.
+git -C "$REPO_ROOT" -c tar.umask=0022 archive --format=tar "$REF" -- \
   .codex-plugin \
   CODE_OF_CONDUCT.md \
   LICENSE \
   README.md \
   assets \
   skills \
-  | tar -xf - -C "$STAGE"
+  | (umask 022 && tar -xf - -C "$STAGE")
 
 VERSION="$(jq -r '.version // empty' "$STAGE/.codex-plugin/plugin.json")"
 [[ -n "$VERSION" ]] || die "could not read version from .codex-plugin/plugin.json"
@@ -298,12 +301,19 @@ case "$FORMAT" in
     )
     ;;
   tar.gz)
-    # Match the prior official archive's deterministic tar entry metadata.
+    # Match the prior official archive's deterministic tar entry metadata:
+    # uid 0, gid 0, empty uname/gname. GNU tar and bsdtar spell the flags
+    # differently.
+    if tar --version 2>/dev/null | grep -q 'GNU tar'; then
+      TAR_OWNER_FLAGS=(--owner=0 --group=0 --numeric-owner)
+    else
+      TAR_OWNER_FLAGS=(--uid 0 --gid 0 --uname '' --gname '')
+    fi
     TZ=UTC find "$STAGE" -exec touch -t 197001010000 {} +
     (
       cd "$STAGE"
       rm -f "$OUTPUT"
-      COPYFILE_DISABLE=1 tar -cf - --no-recursion --format ustar --uid 0 --gid 0 --uname '' --gname '' -T "$ARCHIVE_LIST" |
+      COPYFILE_DISABLE=1 tar -cf - --no-recursion --format ustar "${TAR_OWNER_FLAGS[@]}" -T "$ARCHIVE_LIST" |
         gzip -9n >"$OUTPUT"
     )
     ;;
