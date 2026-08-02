@@ -1,5 +1,27 @@
 # Superpowers Release Notes
 
+## v6.2.0 (2026-08-02)
+
+### One Document: Spec Merged Into the Plan
+
+The brainstorm → spec-file → plan-file chain produced two documents whose load-bearing content overlapped almost entirely once plans became engineering briefs — a drift hazard (values hand-copied spec→plan with no back-propagation) and a redundant approve-gate. The design conversation now hands off directly to one written artifact: the plan.
+
+- **brainstorming no longer writes a spec document.** The section-by-section conversation approval (and the HARD-GATE) are unchanged, but the approved conversation IS the design record: the checklist ends with a fresh-eyes pass on the approved design (placeholders, contradictions, ambiguity) and an immediate, same-turn invocation of writing-plans — a design that exists only in conversation is one compaction away from gone. The two surviving cases for a standalone written design: a multi-plan decomposition overview, or the user explicitly asking for one. `spec-document-reviewer-prompt.md` is deleted (orphaned since the inline-self-review rewrite).
+- **writing-plans gains a `## Design` header section** — chosen approach, rejected alternatives (one line each, with why), and cross-cutting decisions (data flow, error handling, testing). It sits in the header *before Task 1* deliberately: `task-brief` slices from task heading to task heading, so trailing sections would leak into the last task's implementer brief. The plan is now committed once it passes self-review, preserving the pre-implementation record of intent the spec commit used to provide. All "from the spec" wording now reads "from the approved design", and self-review step 1 checks tasks against the Design section and the approved conversation.
+- **Downstream wording aligned.** `plan-document-reviewer-prompt.md` drops its `[SPEC_FILE_PATH]` input (Spec Alignment → Design Alignment); subagent-driven-development's constraints-block guidance points at the plan's Global Constraints (+ Design-section constraints) with an explicit "don't paste the whole Design section" guard against per-task context bloat; README updated. Implementer dispatch is unaffected — task briefs never included the header and still don't.
+
+### Skills
+
+- **New `plan-delegate-review` skill — the fork owner's default delivery pipeline.** Extracted from production runs (bot-manager circuit-breaker 2026-07-21, solcard KYC hotfix 2026-08-01): plan in plan mode with `writing-plans`-format PR-sized slices; delegate each slice to a codex Sol xhigh implementer; close with three identically-prompted read-only codex reviewers, dispatcher-coalesced lettered findings, and a single workspace-write codex fixer that validates each finding (`fix-here / valid-but-out-of-scope / invalid`) before fixing what survives; the dispatcher verifies and lands. Falls back to harness subagents when no codex CLI is present.
+- **Declared-trigger opt-in.** `plan-delegate-review` is the first skill whose opt-in boundary declares its own triggers — entering plan mode for implementation work counts as explicit opt-in for it. `using-superpowers` gains a matching declared-trigger clause so the suite-wide boundary and the skill agree.
+- **Brainstorming is text-only.** The visual-companion checklist step, section, and `visual-companion.md` guide are removed from the skill; brainstorming runs entirely in conversation. The `lib/brainstorm-server` code and its tests remain in the repo but have no skill entry point.
+
+### Packaging
+
+- **`package-codex-plugin.sh` works on GNU tar and from linked worktrees.** The tar.gz step used bsdtar-only ownership flags (`--uid/--gid/--uname/--gname`), which GNU tar rejects — `pipefail` killed the packager after the output redirection had already created an empty archive, so the test failed with a misleading `task-brief: Not found in archive`. The packager now detects the tar flavor and uses the GNU spellings (`--owner=0 --group=0 --numeric-owner`, verified byte-identical headers). Repo detection uses `git rev-parse --is-inside-work-tree` instead of requiring a `.git` directory, so the script runs from linked worktrees.
+- **Archives are now deterministic across machines.** Entry modes were umask-dependent twice over (`git archive`'s `tar.umask` default and the extraction umask); they're pinned to 755/644 via `-c tar.umask=0022` + extraction under `umask 022`. The first archive built after this change gets a new SHA-256 relative to previously recorded checksums. The test's bsdtar-only timestamp assertion was replaced with a python `tarfile` mtime check that passes under both tar flavors.
+- The Codex portal metadata source needs an `agents/openai.yaml` seed for `plan-delegate-review` before the next `package-codex-plugin.sh` run — the packager refuses skills without OpenAI metadata; the test suite covers new skills automatically by enumerating `skills/`.
+
 ## v6.1.1 (2026-07-02)
 
 ### Codex

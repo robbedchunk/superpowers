@@ -23,7 +23,7 @@ Subagent (general-purpose):
 
     Read the task brief: [BRIEF_FILE]
 
-    Global constraints from the spec/design that bind this task:
+    Global constraints from the plan that bind this task:
     [GLOBAL_CONSTRAINTS]
 
     ## What the Implementer Claims They Built
@@ -166,9 +166,10 @@ fix report; [FIX_SHAS] are the commits the fix added.
 - `[BRIEF_FILE]` — REQUIRED: the task brief file (`scripts/task-brief PLAN N`
   prints the path; same file the implementer worked from)
 - `[GLOBAL_CONSTRAINTS]` — the binding requirements copied verbatim from
-  the plan's Global Constraints section or the spec: exact values, formats,
-  and stated relationships between components (not process rules — those
-  are already in this template)
+  the plan's Global Constraints section (plus any constraint stated in its
+  Design section): exact values, formats, and stated relationships between
+  components (not process rules — those are already in this template; not
+  the whole Design section either)
 - `[REPORT_FILE]` — REQUIRED: the file the implementer wrote its detailed
   report to (fix reports are appended to it)
 - `[BASE_SHA]` — commit before this task

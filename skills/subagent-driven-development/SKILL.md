@@ -215,11 +215,13 @@ final whole-branch review. When you fill a reviewer template:
   are pre-judging, usually to spare yourself a review loop.
 - The global-constraints block you hand the reviewer is its attention
   lens. Copy the binding requirements verbatim from the plan's Global
-  Constraints section or the spec: exact values, exact formats, and the
-  stated relationships between components ("same layout as X", "matches
-  Y"). The reviewer's template already carries the process rules (YAGNI,
-  test hygiene, review method) — the constraints block is for what THIS
-  project's spec demands.
+  Constraints section (and the Design section, where a constraint lives
+  there): exact values, exact formats, and the stated relationships between
+  components ("same layout as X", "matches Y"). The Design section as a
+  whole is scene-setting for you, not part of the constraints block — do
+  not paste it wholesale. The reviewer's template already carries the
+  process rules (YAGNI, test hygiene, review method) — the constraints
+  block is for what THIS project's plan demands.
 - Hand the reviewer its diff as a file: run this skill's
   `scripts/review-package BASE HEAD` and pass the reviewer the file path
   it prints (or, without bash: `git log --oneline`, `git diff --stat`,

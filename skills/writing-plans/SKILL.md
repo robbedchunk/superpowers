@@ -13,18 +13,18 @@ Use this workflow only when the current user request explicitly opts into Superp
 
 Write implementation plans that carry the decisions an implementer cannot cheaply rediscover: intent, interface contracts, binding constraints, and acceptance criteria. The implementer is a capable engineer with full access to the repo and its tools — linters, typecheckers, test runners. Implementation code gets written in the repo, where those tools can judge it; the plan records what must be true when the work is done, not how every line looks. DRY. YAGNI. TDD. Frequent commits.
 
-Assume the implementer knows the language and stack well, but knows nothing about our problem domain, our spec, or the decisions made during brainstorming — the plan is where those decisions live. Each task's implementer sees only their own task, never the whole plan.
+Assume the implementer knows the language and stack well, but knows nothing about our problem domain or the design decisions made during brainstorming — the plan is where those decisions live. The plan is the single written artifact of the design conversation; there is no separate spec document unless the user asked for one. Each task's implementer sees only their own task, never the whole plan.
 
 **Announce at start:** "I'm using the writing-plans skill to create the implementation plan."
 
 **Context:** If working in an isolated worktree, it should have been created via the `superpowers:using-git-worktrees` skill at execution time.
 
-**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`
+**Save plans to:** `docs/superpowers/plans/YYYY-MM-DD-<feature-name>.md`, and **commit the plan** once it passes self-review — it is the pre-implementation record of intent, and the eventual PR diffs outcome against it.
 - (User preferences for plan location override this default)
 
 ## Scope Check
 
-If the spec covers multiple independent subsystems, it should have been broken into sub-project specs during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
+If the approved design covers multiple independent subsystems, it should have been decomposed into sub-projects during brainstorming. If it wasn't, suggest breaking this into separate plans — one per subsystem. Each plan should produce working, testable software on its own.
 
 ## File Structure
 
@@ -91,12 +91,23 @@ when the dependencies are real.
 
 **Tech Stack:** [Key technologies/libraries]
 
+## Design
+
+[The decisions from brainstorming that no single task carries: why this
+approach won over the alternatives considered (one line per rejected
+alternative, with the reason), plus cross-cutting decisions — data flow,
+error handling, testing strategy. This section replaces a separate
+design/spec document; record anything an implementer or reviewer would
+otherwise have to rediscover from the conversation. It must stay in the
+header, before Task 1 — task extraction slices from task heading to task
+heading, and trailing sections leak into the last task's brief.]
+
 ## Global Constraints
 
-[The spec's project-wide requirements — version floors, dependency limits,
-naming and copy rules, platform requirements — one line each, with exact
-values copied verbatim from the spec. Every task's requirements implicitly
-include this section.]
+[The approved design's project-wide requirements — version floors,
+dependency limits, naming and copy rules, platform requirements — one line
+each, with exact values copied verbatim from the design conversation.
+Every task's requirements implicitly include this section.]
 
 ---
 ```
@@ -121,13 +132,13 @@ include this section.]
 
 **Requirements:**
 - [What this task must do, as observable behavior. Copy exact values from
-  the spec verbatim: limits, formats, defaults, error codes, user-facing
-  copy.]
+  the approved design verbatim: limits, formats, defaults, error codes,
+  user-facing copy.]
 - [Name edge cases and error behavior specifically — "amounts above
   MAX_TRADE are rejected with error E402", never "handle invalid input".]
 
 **Contract code** — only where the exact shape IS the requirement (public
-API signature, wire format, schema/migration DDL, spec-pinned algorithm,
+API signature, wire format, schema/migration DDL, design-pinned algorithm,
 exact user-facing copy). Omit this section if the task has none:
 
 ```python
@@ -155,20 +166,20 @@ Two rules, opposite directions.
 - References to types, functions, or methods that no task Produces and the codebase doesn't already contain
 - Acceptance criteria that cannot fail ("works correctly", "is robust")
 
-**Code: contracts only.** A code block earns its place in a plan only when its exact shape is itself a requirement: a public API signature, a wire format, schema or migration DDL, exact user-facing copy, an algorithm the spec pinned down. If you catch yourself writing a function body, stop — turn it into requirements and acceptance tests. Code written in a plan is authored where no linter, typechecker, or test can judge it, then treated as authoritative by implementers even after the repo has drifted from its assumptions. Behavior belongs in the plan; implementation belongs in the repo.
+**Code: contracts only.** A code block earns its place in a plan only when its exact shape is itself a requirement: a public API signature, a wire format, schema or migration DDL, exact user-facing copy, an algorithm the approved design pinned down. If you catch yourself writing a function body, stop — turn it into requirements and acceptance tests. Code written in a plan is authored where no linter, typechecker, or test can judge it, then treated as authoritative by implementers even after the repo has drifted from its assumptions. Behavior belongs in the plan; implementation belongs in the repo.
 
 ## Remember
 - Exact file paths always
-- Exact values from the spec verbatim — numbers, formats, copy, signatures
+- Exact values from the approved design verbatim — numbers, formats, copy, signatures
 - Acceptance tests an implementer can write without guessing
 - True dependencies declared per task; concurrent tasks never share files
 - DRY, YAGNI, TDD, frequent commits
 
 ## Self-Review
 
-After writing the complete plan, look at the spec with fresh eyes and check the plan against it. This is a checklist you run yourself — not a subagent dispatch.
+After writing the complete plan, look at the approved design with fresh eyes — the Design section, the Global Constraints, and the design conversation itself — and check the tasks against it. This is a checklist you run yourself — not a subagent dispatch.
 
-**1. Spec coverage:** Skim each section/requirement in the spec. Can you point to a task that implements it? List any gaps.
+**1. Design coverage:** Skim each decision and requirement the user approved in conversation. Can you point to a task that implements it, or a header section that records it? List any gaps.
 
 **2. Placeholder scan:** Search your plan for the red-flag patterns above. Fix them.
 
@@ -178,13 +189,13 @@ After writing the complete plan, look at the spec with fresh eyes and check the 
 
 **5. Contract-only scan:** Any code block that isn't a contract? Convert it to requirements plus acceptance tests, and delete it.
 
-If you find issues, fix them inline. No need to re-review — just fix and move on. If you find a spec requirement with no task, add the task.
+If you find issues, fix them inline. No need to re-review — just fix and move on. If you find an approved requirement with no task, add the task.
 
 ## Execution Handoff
 
-After saving the plan, offer execution choice:
+After saving and committing the plan, offer execution choice:
 
-**"Plan complete and saved to `docs/superpowers/plans/<filename>.md`. Two execution options:**
+**"Plan complete and committed at `docs/superpowers/plans/<filename>.md`. Two execution options:**
 
 **1. Subagent-Driven (recommended)** - I dispatch fresh implementer subagents per task, scheduled from the dependency graph — independent tasks run in parallel — with a merge-gate review per task
 

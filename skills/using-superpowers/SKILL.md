@@ -9,7 +9,8 @@ Superpowers is explicitly opt-in. Installing the plugin, starting a conversation
 - **Suite-wide opt-in:** If the current user request clearly asks to use Superpowers, select and invoke the initial relevant Superpowers workflow for that request.
 - **Single-workflow opt-in:** If the user names one `superpowers:<workflow>`, invoke that workflow.
 - **Chaining permission:** Ask for permission before invoking another Superpowers workflow unless the user has already explicitly authorized chaining. Requests such as "chaining is fine," "run the full Superpowers workflow," or an equivalent instruction provide that authorization for the current request.
-- **No opt-in:** If the current user request does not explicitly ask for Superpowers or name a Superpowers workflow, do not invoke any Superpowers skill.
+- **Declared-trigger opt-in:** A skill whose own opt-in boundary declares additional triggers (currently only `superpowers:plan-delegate-review`, which activates when the user enters plan mode for implementation work) may be invoked under those declared triggers; treat them as explicit opt-in for that skill only.
+- **No opt-in:** If the current user request does not explicitly ask for Superpowers, name a Superpowers workflow, or match a declared trigger, do not invoke any Superpowers skill.
 
 Opt-in applies to the current request. Do not silently turn it into a default for later requests.
 </OPT-IN-BOUNDARY>

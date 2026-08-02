@@ -17,7 +17,7 @@ Give your agent Superpowers: [Claude Code](#claude-code), [Antigravity](#antigra
 
 It starts when you explicitly ask your coding agent to use Superpowers. The agent then steps back and asks what you're really trying to do instead of jumping straight into code.
 
-Once it's teased a spec out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
+Once it's teased a design out of the conversation, it shows it to you in chunks short enough to actually read and digest. 
 
 After you've signed off on the design, your agent puts together an implementation plan that's clear enough for an enthusiastic junior engineer with poor taste, no judgement, no project context, and an aversion to testing to follow. It emphasizes true red/green TDD, YAGNI (You Aren't Gonna Need It), and DRY. 
 
@@ -190,7 +190,7 @@ The Pi package loads the Superpowers skills and a small extension that injects t
 
 After you explicitly ask to use Superpowers and approve chaining, a typical suite-wide workflow is:
 
-1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Saves design document.
+1. **brainstorming** - Activates before writing code. Refines rough ideas through questions, explores alternatives, presents design in sections for validation. Hands the approved design to writing-plans — the plan is the single written artifact.
 
 2. **using-git-worktrees** - Activates after design approval. Creates isolated workspace on new branch, runs project setup, verifies clean test baseline.
 
@@ -227,6 +227,7 @@ After you explicitly ask to use Superpowers and approve chaining, a typical suit
 - **using-git-worktrees** - Parallel development branches
 - **finishing-a-development-branch** - Merge/PR decision workflow
 - **subagent-driven-development** - Dependency-scheduled parallel execution with bounded merge-gate reviews
+- **plan-delegate-review** - Fork-default delivery pipeline: plan-mode slices → codex Sol implementers → three identically-prompted codex reviewers → coalesced findings → one validating fixer (declared-trigger opt-in: activates on plan mode for implementation work)
 
 **Meta**
 - **writing-skills** - Create new skills following best practices (includes testing methodology)
