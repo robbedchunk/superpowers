@@ -40,7 +40,8 @@ This structure informs the task decomposition. Each task should produce self-con
 ## Task Right-Sizing
 
 A task is a coherent vertical slice — the smallest unit that deserves its
-own merge-gate review, sized like a reviewable PR. Fold setup,
+own review gate, sized like a reviewable PR; whether that gate runs per
+task or per landed PR is the executing workflow's declared choice. Fold setup,
 configuration, scaffolding, and documentation into the task whose
 deliverable needs them; split only where a reviewer could meaningfully
 reject one task while approving its neighbor. Each task ends with an
@@ -55,7 +56,9 @@ when they finish.
 Granularity is a dial, not a rule. When a slice is genuinely risky — subtle
 concurrency, a security-sensitive surface, a migration that must not lose
 data — split it finer so the review gate lands more often, and say in the
-task why it is cut fine.
+task why it is cut fine. In a plan gated per landed PR, also give the
+risky slice a PR of its own — the finer cut buys a gate only if it lands
+separately.
 
 ## Dependencies
 
@@ -76,6 +79,15 @@ plan around parallelism or against it — a linear chain, a wide fan-out, and
 a contract-defining task that unblocks three others are all fine shapes
 when the dependencies are real.
 
+A third declaration, **Lands in:**, names the PR that ships the task
+(`PR-1`, `PR-2`, …). The plan header's **PRs:** line declares each PR's
+base branch; a single-PR plan may instead declare once in the header that
+all tasks land in PR-1. Workflows that gate per landed PR (e.g.
+plan-delegate-review) key their review cycles off this mapping; a plan
+declaring more than one PR must be executed by such a workflow — per-task-
+gate executors (e.g. subagent-driven-development) ignore the mapping and
+land everything as one branch.
+
 ## Plan Document Header
 
 **Every plan MUST start with this header:**
@@ -90,6 +102,11 @@ when the dependencies are real.
 **Architecture:** [2-3 sentences about approach]
 
 **Tech Stack:** [Key technologies/libraries]
+
+**PRs:** [Each declared PR with its git branch name and base — "PR-1
+(branch: feat-x-pr1, base: main); PR-2 (branch: feat-x-pr2, base:
+feat-x-pr1)". A single-PR plan: "PR-1 (branch: feat-x, base: main) — all
+tasks". A stacked plan may add "+ stack-wide integration audit".]
 
 ## Design
 
@@ -118,6 +135,8 @@ Every task's requirements implicitly include this section.]
 ### Task N: [Component Name]
 
 **Depends on:** Task 1, Task 2 — or `none`
+
+**Lands in:** PR-1 — omit when the header declares a single PR for all tasks
 
 **Files:**
 - Create: `exact/path/to/file.py`
@@ -188,6 +207,8 @@ After writing the complete plan, look at the approved design with fresh eyes —
 **4. Graph sanity:** No dependency cycles. No missing `Depends on:` — a task that Consumes what another Produces depends on it. No two tasks without a dependency path between them sharing a file.
 
 **5. Contract-only scan:** Any code block that isn't a contract? Convert it to requirements plus acceptance tests, and delete it.
+
+**6. PR mapping sanity:** Every `Lands in:` names a PR declared in the header's **PRs:** line, and every declared PR has a branch name and base. No PR-base cycles. No task lands in an earlier PR while depending on a task that lands in a later one.
 
 If you find issues, fix them inline. No need to re-review — just fix and move on. If you find an approved requirement with no task, add the task.
 
