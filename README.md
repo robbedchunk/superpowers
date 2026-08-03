@@ -227,7 +227,7 @@ After you explicitly ask to use Superpowers and approve chaining, a typical suit
 - **using-git-worktrees** - Parallel development branches
 - **finishing-a-development-branch** - Merge/PR decision workflow
 - **subagent-driven-development** - Dependency-scheduled parallel execution with bounded merge-gate reviews
-- **plan-delegate-review** - Fork-default delivery pipeline: plan-mode slices → codex Sol implementers → three identically-prompted codex reviewers → coalesced findings → one validating fixer (declared-trigger opt-in: activates on plan mode for implementation work)
+- **plan-delegate-review** - Fork-default delivery pipeline: plan-mode slices → codex Sol implementers → Claude-side simplify gate → three identically-prompted codex reviewers → coalesced findings → one validating fixer (declared-trigger opt-in: activates on plan mode for implementation work)
 
 **Meta**
 - **writing-skills** - Create new skills following best practices (includes testing methodology)
