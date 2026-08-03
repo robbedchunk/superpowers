@@ -1,5 +1,14 @@
 # Superpowers Release Notes
 
+## v6.3.0 (2026-08-03)
+
+### Skills
+
+- **plan-delegate-review gains a simplify gate (Phase 2.5).** Sol xhigh implementers overengineer, so the pipeline now counters it where it's produced and verifies the cleanup for free. After all slices land — before any review brief is written — ONE Claude-side `code-simplifier` agent (deliberately not another Sol: Sol judging Sol's abstractions shares the priors that produced them) sweeps the branch diff with contracts and public API frozen, deletion bias, a no-op license, re-run acceptance checks (exact commands listed, output shown), and its own revertible commit(s). Its removed-X-because-Y list feeds the review brief so reviewers don't burn findings re-litigating deliberate removals. Placement is the point: reviewers see the simplified branch, so the triple review adversarially verifies the simplification at no extra cost.
+- **Prevention at both codex injection points, one canonical enemy.** The implementer slice prompt gains a YAGNI clause and the fixer's PART 3 pins the smallest diff that resolves the finding — both positive-contract-first, and both naming the same triad (speculative abstractions, config surface, indirection) that the simplifier deletes and the new "unnecessary complexity" review dimension flags.
+- **Landing follows through.** Phase 5 reads the fixer's diff with the simplify lens and a bounce rule: a ballooned fix gets redone minimally or re-reviewed, never accepted-then-refactored — a fix big enough to need its own simplify pass needed re-review anyway. Failure rows cover a gate that breaks a check (revert its commits and proceed — the gate is optional, the review isn't) and harnesses without a `code-simplifier` agent (general-purpose agent with the same pinned prompt; never Sol).
+- **PR descriptions route to the owning repo's rules.** The phase 3 wait-time suggestion ("work on the PR description") now requires reading the owning repo/workspace PR-description rules before drafting — in hawkeye-master, docs/operating-scope.md "Pull Request Descriptions" (plain-English section first, collapsed Code mapping details block, then the technical description). Driven by the 2026-08-03 liquidity-classifier run, where three PR bodies opened with "## Summary" because nothing in the skill routed to those rules.
+
 ## v6.2.0 (2026-08-02)
 
 ### One Document: Spec Merged Into the Plan
