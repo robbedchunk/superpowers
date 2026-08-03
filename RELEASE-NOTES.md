@@ -1,5 +1,16 @@
 # Superpowers Release Notes
 
+## v6.4.0 (2026-08-03)
+
+### Skills
+
+- **plan-delegate-review: review granularity now follows PR granularity.** The pipeline sized slices as "PR-able" but hardwired ONE terminal review of the accumulated branch — a monolith review whenever a plan lands slices as separate PRs. Phases 2.5–5 now run as a full cycle per declared PR, in dependency order, with phase 5 handing off to the next PR. Design rule throughout: no derived categories for the executing agent — the slice→PR mapping is declared at plan time (`Lands in: PR-<n>` plus a header `PRs:` manifest with real git branch names and bases), runtime reduces to checkable conditions and mechanical formulas, and remaining freedom is an explicit license (implementing a later PR while an earlier one is in phases 3–5). A single-PR plan (the common case) declares the mapping in one header line and behaves exactly as before.
+- **Git mechanics are executable, not interpretable.** Phase 2.5 entry is three ordered conditions: rebase onto the current base tip; pin it (`BASE=$(git rev-parse <base-branch>)` — the SHA, never a branch name, in every cycle command); run the union of the PR's acceptance checks on the assembled head. Simplify gate, review brief, and fixer all operate on `git diff $BASE...HEAD`. A base that moves mid-cycle forces rebase + re-pin; the review survives only when the recomputed diff is byte-identical to what reviewers received AND the checks pass on the rebased head — the residual risk (an unchanged patch over a moved base changing behavior in ways the checks don't cover) is stated in the text as an accepted tradeoff so stacking stays affordable (user ruling).
+- **Invariants and escalations.** No PR pushes before its cycle has run; the only post-review commits are fixer commits, validated in phase 5 (a ballooned fix gets redone minimally, then a one-reviewer pass on the redo). No review diff spans two PRs — sole exception the plan-declared stack-wide integration audit, run on a pinned trunk before the final PR's push; a blocking audit finding against an already-landed PR halts the push for the user's disposition (user ruling). A finding that invalidates any approved plan decision (contract, Global Constraint, exact requirement, contract code, or the PR topology) stops the cycle for user-approved plan amendment. Mirrored deployment branches are defined as landing targets for already-reviewed commits, never second review branches.
+- **writing-plans carries the format half.** `Lands in:` joins the canonical task template; the plan header gains a `PRs:` manifest (branch names + bases, optional stack audit); self-review gains check 6, PR-mapping sanity (every `Lands in:` names a declared PR, no base cycles, dependency direction respects PR order); risky slices take a PR of their own so the finer cut actually buys a gate; and a plan declaring multiple PRs must be executed by a workflow that honors the mapping — per-task-gate executors land everything as one branch.
+
+Authored via two fresh adversarial Sol xhigh review rounds (16 + 17 findings, all blockers resolved or ruled); the rebase-survival rule and the audit-halt behavior are documented user decisions, not defaults.
+
 ## v6.3.0 (2026-08-03)
 
 ### Skills
