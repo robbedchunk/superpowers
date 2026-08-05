@@ -1,5 +1,11 @@
 # Superpowers Release Notes
 
+## v6.5.0 (2026-08-05)
+
+### Skills
+
+- **plan-delegate-review: the plan gate is a declared three-way choice — approve / hold / produce a handoff.** Phase 1's "get explicit approval before phase 2" collapsed to a bare proceed-yes/no in practice, which had no answer for the real third case: the plan is done but the session can't continue (usage limits, end of day). The gate now declares three outcomes with defined next actions: **approve** enters phase 2; **hold** stops with the committed plan as the deliverable, a later "go" re-entering at phase 2 with no re-planning; **produce a handoff** writes one lean file beside the plan (`<plan-basename>-HANDOFF.md`, left uncommitted — it may carry credentials/host facts that don't belong in history) and then holds. The handoff points, never restates — the committed plan (path + sha) stays the single source of truth — and carries only what an executor can't derive from the repo: the one-line resume instruction, a portability note (the pipeline was authored for a specific harness; codex delegation and this skill itself are optional so long as each PR is reviewed before it is pushed), environment facts, open user-owned prerequisites, and per-PR status lines when stopping mid-pipeline. Extracted from the 2026-08-05 hawkeye-catalog-sync session, where usage ran out at exactly this gate.
+
 ## v6.4.0 (2026-08-03)
 
 ### Skills
