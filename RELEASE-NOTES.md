@@ -1,5 +1,14 @@
 # Superpowers Release Notes
 
+## v6.6.0 (2026-09-01)
+
+### Skills
+
+- **New skill: grilling — a relentless round-by-round interview over a design tree.** Ported from [mattpocock/skills](https://github.com/mattpocock/skills) (MIT © 2026 Matt Pocock) and adapted to this fork's opt-in model. The workflow maps a plan or decision as a design tree, computes the **frontier** (every decision whose prerequisites are settled), and asks the whole frontier in one numbered round with a recommended answer per question — then waits. Answers push the frontier outward; the session ends only when it is empty, with nothing silently assumed. Fact-finding is the agent's job (dispatch a sub-agent, don't block the rest of the round); the decisions stay the user's.
+- **grilling is the second declared-trigger skill.** Its opt-in boundary activates on the user asking to be grilled — "grill me", "grill this", "grill the plan", "grill me on X" — so the trigger phrase alone is the opt-in, no "use Superpowers" preamble required. `using-superpowers`' Declared-trigger clause now names both it and `plan-delegate-review` (it previously read "currently only plan-delegate-review"), and gains a matching example. Task relevance is still never permission: a half-formed plan described out loud does not fire it.
+- **Matt's `grill-me` alias is folded in, not shipped.** Upstream ships `grill-me` as a thin `disable-model-invocation` skill whose whole body is "call grilling". Here the declared trigger already covers "grill me", so a second roster entry would buy nothing. `grill-with-docs` is not ported — it chains upstream's `domain-modeling`, which this fork doesn't have.
+- **Hand-off is explicit.** Grilling produces a shared understanding, not an artifact; the skill ends by asking before chaining to `writing-plans` or `plan-delegate-review`, per the standing chaining rule.
+
 ## v6.5.0 (2026-08-05)
 
 ### Skills
