@@ -1,5 +1,11 @@
 # Superpowers Release Notes
 
+## v6.8.1 (2026-09-01)
+
+### Skills
+
+- **grilling: coherence pass on the v6.8.0 ending.** Four contradictions fixed. *Hold* claimed a fresh session could resume without re-interviewing, while the skill itself says the transcript is the only copy of the settled answers — hold is now a same-session pause, and leaving for a fresh session is the handoff case. *Confirm* both proceeded to a workflow and said "ask first" — choosing Confirm from the three-way gate now IS the chaining permission for the workflow named in the option, matching how `plan-delegate-review` authorizes `writing-plans`. *Commit as they land* meant a commit per resolved term on whatever branch was checked out — glossary and ADRs are now committed once, at the gate, the way `writing-plans` commits a plan once. The handoff path was hardcoded into the current repo, contradicting the `<TARGET-GATE>` that keeps out-of-domain grillings from writing there — it now lands in the repo the gate confirmed, or asks. Two gaps closed: multi-context repos keep one ADR directory (only the glossary splits), and fact-finding may be done directly where sub-agents aren't available or the user has said not to use them.
+
 ## v6.8.0 (2026-09-01)
 
 ### Skills

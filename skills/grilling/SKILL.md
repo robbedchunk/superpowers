@@ -35,7 +35,7 @@ Format a round like so:
 
 Each round the user answers reshapes the tree: settled decisions push the frontier outward and unblock questions that depended on them. Recompute the frontier and ask the next round. A question whose answer depends on another question still open in this round belongs to a _later_ round, not this one.
 
-Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent to find it; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The _decisions_ are the user's: put each to them and wait.
+Finding _facts_ is your job, never the user's. When a frontier question needs a fact from the environment (filesystem, tools, etc.), dispatch a sub-agent to find it, or look it up yourself where sub-agents aren't available or the user has said not to use them; don't ask the user for anything you could look up yourself. Don't block on it: a running exploration is an unsettled prerequisite, so only the questions downstream of it wait for the sub-agent to report; ask the rest of the frontier now. The _decisions_ are the user's: put each to them and wait.
 
 The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding.
 
@@ -63,7 +63,7 @@ When the user states how something works, check whether the code agrees. If you 
 
 ### Where to write
 
-Decisions go to the repo's ADR location (`docs/superpowers/adr/NNNN-<slug>.md` unless the repo says otherwise) — a sibling of `docs/superpowers/plans/` and `docs/superpowers/specs/`, so everything this suite writes lives under one root.
+Decisions go to the repo's ADR location (`docs/superpowers/adr/NNNN-<slug>.md` unless the repo says otherwise) — a sibling of `docs/superpowers/plans/` and `docs/superpowers/specs/`, so everything this suite writes lives under one root. Multi-context repos split only the glossary; every ADR still lives in that one directory.
 
 The glossary is the deliberate exception: `CONTEXT.md` goes at the **repo root**, or in the relevant context's directory if a `CONTEXT-MAP.md` at the root marks the repo as multi-context. It is vocabulary every reader and every agent should hit without being told where to look — burying it under a tool's directory defeats what it is for.
 
@@ -93,17 +93,17 @@ If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](
 
 The glossary is not a spec, and most settled answers earn neither a term nor an ADR — they exist only in this conversation. That is the known gap in this workflow, and it is where precise answers get lost: ordering guarantees, negative requirements, numeric defaults, and exact thresholds soften into vague prose if anything downstream re-derives them from memory instead of from the transcript.
 
-Commit the glossary and ADR changes as they land — they are the record of intent, the same way a plan is. Everything else rides on the transcript until a plan absorbs it, which is why the session must never end on a vague note.
+Glossary and ADR changes are written inline but committed once, at the gate below — one commit, the way writing-plans commits a plan once it passes self-review, not a commit per resolved term on whatever branch happens to be checked out. Everything else rides on the transcript until a plan absorbs it, which is why the session must never end on a vague note.
 
 ## The understanding gate
 
-When the frontier empties, put it to the user as three explicit options — never a bare "does that make sense?":
+When the frontier empties, commit the glossary and ADR changes, then put it to the user as three explicit options — never a bare "does that make sense?":
 
-- **Confirm the understanding** — proceed to `superpowers:writing-plans` to commit the settled tree to a plan, or `superpowers:plan-delegate-review` to plan and build it. Ask first unless the user already authorized chaining for this request. Carry the exact values from the answers into the plan, then re-read the plan against what the user actually said rather than assuming it captured them.
-- **Hold** — stop; the committed glossary and ADRs are the deliverable, and a later "go" (this session or a fresh one) resumes without re-interviewing.
-- **Produce a handoff** — write the handoff below, then stop as with hold.
+- **Confirm and plan** — name the next workflow in the option itself: `superpowers:writing-plans` to commit the settled tree to a plan, or `superpowers:plan-delegate-review` to plan and build it. The user choosing this option IS the chaining permission for that one workflow — don't ask again. Carry the exact values from the answers into the plan, then re-read the plan against what the user actually said rather than assuming it captured them.
+- **Hold** — stop here, in this session; the committed glossary and ADRs are the deliverable, and a later "go" in this same session proceeds to planning without re-interviewing. Hold does not survive the session: the settled answers live only in the transcript, so leaving for a fresh session means the handoff, not hold.
+- **Produce a handoff** — write the handoff below, then stop.
 
-**Handoff** (also the right move whenever the session must stop mid-interview — usage limits, end of day): one file at `docs/superpowers/plans/YYYY-MM-DD-<topic>-GRILL-HANDOFF.md`, left uncommitted — it may name credentials, hosts, or session facts that don't belong in history.
+**Handoff** (also the right move whenever the session must stop mid-interview — usage limits, end of day): one file, `YYYY-MM-DD-<topic>-GRILL-HANDOFF.md`, in `docs/superpowers/plans/` of the repo the TARGET-GATE confirmed — and if the gate kept the session out of the repo, ask where it should go rather than writing it there. Left uncommitted: it may name credentials, hosts, or session facts that don't belong in history.
 
 Where `plan-delegate-review`'s handoff points and never restates, this one **restates** — deliberately. That handoff sits beside a committed plan holding every decision; here no such artifact exists, and the transcript is the only copy of the settled answers. A grilling handoff that merely points would hand the next session an empty room. Contents, in order: the one-line resume instruction ("resume this grilling; the settled answers below are approved, do not re-ask them"); every settled decision with its **exact values verbatim** — thresholds, ordering guarantees, negative requirements, numeric defaults — never paraphrased; the unexplored frontier, as the questions that would have been the next round; pointers (path + sha) to the terms and ADRs already written, which are the one part that does not need restating; and any open user-owned prerequisite the interview was blocked on.
 
