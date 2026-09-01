@@ -1,5 +1,14 @@
 # Superpowers Release Notes
 
+## v6.8.0 (2026-09-01)
+
+### Skills
+
+- **grilling's artifacts follow the suite's storage convention.** v6.7.0 shipped upstream's default `docs/adr/`, which put a second documentation tree next to `docs/superpowers/plans/` and `docs/superpowers/specs/` for no reason. ADRs now live at `docs/superpowers/adr/NNNN-<slug>.md` unless the repo says otherwise — same "unless the repo says otherwise" escape the plan location uses — so everything the suite writes sits under one root. Numbering stays sequential rather than dated: ADRs cross-reference each other by number (`superseded by ADR-0007`), which a date-prefixed filename can't carry.
+- **`CONTEXT.md` is the deliberate exception and stays at the repo root** (or in the relevant context's directory when a `CONTEXT-MAP.md` marks the repo as multi-context). It is vocabulary every reader and every agent should hit without being told where to look; filing it under a tool's directory defeats what it is for.
+- **The session now ends on a declared three-way gate, borrowed from `plan-delegate-review` phase 1.** "Do not act until the user confirms" collapsed to a bare "does that make sense?" — the same failure the plan gate was rewritten to fix in v6.5.0. When the frontier empties the user gets three outcomes with defined next actions: **confirm** (chain to `writing-plans` or `plan-delegate-review`, carrying exact values through and re-reading the plan against what was actually said); **hold** (stop, committed glossary and ADRs are the deliverable, a later "go" resumes without re-interviewing); **produce a handoff**. Glossary and ADR changes are committed as they land — they are a record of intent, like a plan.
+- **The grilling handoff restates where the pipeline's handoff points — inverted on purpose.** `plan-delegate-review`'s handoff refuses to restate because a committed plan already holds every decision. Grilling has no such artifact: the transcript is the only copy of the settled answers, so a pointing handoff would hand the next session an empty room. `docs/superpowers/plans/YYYY-MM-DD-<topic>-GRILL-HANDOFF.md`, left uncommitted, carries the resume instruction, every settled decision with its exact values verbatim (thresholds, ordering guarantees, negative requirements, numeric defaults — never paraphrased), the unexplored frontier as the next round's questions, path+sha pointers to terms and ADRs already written, and any open user-owned prerequisite. This is the mitigation for the gap named in v6.7.0: a long interview that hits a usage limit no longer evaporates.
+
 ## v6.7.0 (2026-09-01)
 
 ### Skills
