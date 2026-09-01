@@ -1,5 +1,15 @@
 # Superpowers Release Notes
 
+## v6.7.0 (2026-09-01)
+
+### Skills
+
+- **grilling is now stateful: the interview writes the domain model as it goes.** v6.6.0 shipped the interview half only; it left the whole session in the context window. The skill now folds in upstream's `domain-modeling` discipline, so a resolved term lands in `CONTEXT.md` inline the moment it resolves (never batched), and a decision that is hard to reverse AND surprising without context AND the result of a real trade-off lands as an ADR under `docs/adr/`. Both files are created lazily — nothing to scaffold, and a session that yields a sharper glossary and zero ADRs is working as designed. `CONTEXT-FORMAT.md` (opinionated glossary, `_Avoid_` synonyms, no implementation detail, single- vs multi-context repos) and `ADR-FORMAT.md` (a title and 1–3 sentences; optional sections only when they earn their place) ship beside the skill.
+- **Four model-sharpening behaviors run during the interview, not after it:** challenge a term that conflicts with the existing glossary; propose a precise canonical term for overloaded language ("account" → Customer or User?); invent concrete edge-case scenarios to force precision on concept boundaries; cross-reference claims against the code and surface contradictions. These generate frontier questions rather than waiting for the frontier to empty.
+- **One skill, not three — this removes upstream's most-reported failure.** Upstream splits this across `grilling`, a one-line `grill-with-docs` that delegates, and `domain-modeling`. Partial loading is the common result: the interview runs, the writing half never loads, and the session leaves no paper trail while looking like it worked. A single skill cannot half-load. Interview-only grilling is removed rather than kept alongside — there is no mode to silently fall back to.
+- **New `<TARGET-GATE>`: never write into a repo the interview is not about.** Grilling a business decision, a strategy call, or another system while the working directory happens to be a code repo would otherwise drop a `CONTEXT.md` at that repo's root about a domain that isn't its own. The gate fires before the first file lands: confirm the target, or keep the session in conversation. ADR location defers to the repo's own conventions before defaulting to `docs/adr/`.
+- **The hand-off names what the session drops.** The glossary is not a spec and most settled answers earn neither a term nor an ADR, so exact values — ordering guarantees, negative requirements, numeric defaults, thresholds — live only in the transcript and soften into vague prose if anything downstream re-derives them from memory. The skill now closes by carrying those values into `writing-plans` or `plan-delegate-review` (asking first, per the chaining rule) and re-reading the plan against what the user actually said.
+
 ## v6.6.0 (2026-09-01)
 
 ### Skills

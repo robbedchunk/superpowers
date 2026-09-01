@@ -219,7 +219,7 @@ After you explicitly ask to use Superpowers and approve chaining, a typical suit
 
 **Collaboration** 
 - **brainstorming** - Socratic design refinement
-- **grilling** - Relentless round-by-round interview over a design tree, one recommended answer per question (declared-trigger opt-in: activates when the user asks to be grilled)
+- **grilling** - Relentless round-by-round interview over a design tree, one recommended answer per question, sharpening the project's domain language as it goes: resolved terms land in `CONTEXT.md` inline, genuinely hard decisions land as ADRs (declared-trigger opt-in: activates when the user asks to be grilled)
 - **writing-plans** - Detailed implementation plans
 - **executing-plans** - Batch execution with checkpoints
 - **dispatching-parallel-agents** - Concurrent subagent workflows

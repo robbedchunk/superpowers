@@ -1,6 +1,6 @@
 ---
 name: grilling
-description: "Opt-in only: Use when the user explicitly opts into Superpowers for the current request, explicitly names superpowers:grilling, or matches this skill's declared trigger — asking to be grilled ('grill me', 'grill this', 'grill the plan', 'grill me on X'). Never auto-invoke from task relevance alone. Interviews the user in rounds across a design tree, numbering each question and carrying a recommended answer, until nothing is silently assumed."
+description: "Opt-in only: Use when the user explicitly opts into Superpowers for the current request, explicitly names superpowers:grilling, or matches this skill's declared trigger — asking to be grilled ('grill me', 'grill this', 'grill the plan', 'grill me on X'). Never auto-invoke from task relevance alone. Interviews the user in rounds across a design tree while sharpening the project's domain language, writing resolved terms into CONTEXT.md and hard decisions into docs/adr/ as they crystallise."
 ---
 
 <OPT-IN-BOUNDARY>
@@ -10,6 +10,10 @@ Use this workflow when the current request explicitly opts into Superpowers, exp
 # Grilling
 
 **Announce at start:** "Using grilling to stress-test this."
+
+Two halves run at once: the **interview**, which drives to a shared understanding, and the **domain model**, which writes down the vocabulary and the hard decisions the interview settles. Both are this skill. There is no interview-only mode to fall back to — if nothing qualifies to be written, nothing gets written, and that is a normal session, not a degraded one.
+
+## The interview
 
 Interview the user relentlessly until you reach a shared understanding. Map this as a **design tree**: every decision branches into the decisions that hang off it.
 
@@ -35,10 +39,60 @@ Finding _facts_ is your job, never the user's. When a frontier question needs a 
 
 The session is done when the frontier is empty: every branch of the design tree visited, nothing left silently assumed. Do not act on it until the user confirms you have reached a shared understanding.
 
-## Handing Off
+## Sharpening the domain model
 
-Grilling produces a shared understanding, not an artifact. Once the user confirms it, ask before chaining — `superpowers:writing-plans` to commit the settled tree to a plan, or `superpowers:plan-delegate-review` to plan and build it — unless the user already authorized chaining for this request.
+Run these throughout the interview — they generate frontier questions, they don't wait until the end.
+
+### Challenge against the glossary
+
+When the user uses a term that conflicts with the existing language in `CONTEXT.md`, call it out immediately. "Your glossary defines 'cancellation' as X, but you seem to mean Y. Which is it?"
+
+### Sharpen fuzzy language
+
+When the user uses vague or overloaded terms, propose a precise canonical term. "You're saying 'account': do you mean the Customer or the User? Those are different things."
+
+### Discuss concrete scenarios
+
+When domain relationships are being discussed, stress-test them with specific scenarios. Invent scenarios that probe edge cases and force the user to be precise about the boundaries between concepts.
+
+### Cross-reference with code
+
+When the user states how something works, check whether the code agrees. If you find a contradiction, surface it: "Your code cancels entire Orders, but you just said partial cancellation is possible. Which is right?"
+
+## Writing it down
+
+### Where to write
+
+Resolved terms go to `CONTEXT.md` at the repo root, or to the relevant context's `CONTEXT.md` if a `CONTEXT-MAP.md` at the root marks the repo as multi-context. Decisions go to `docs/adr/`, unless the repo's own conventions say otherwise — check before creating the directory.
+
+Create files lazily: only when you have something to write. Nothing exists until the first term or decision crystallises, so there is nothing to scaffold up front.
+
+<TARGET-GATE>
+Before the first file lands, confirm the subject of the grilling is the domain of the repo you are in. Grilling about a business decision, a strategy call, or another system entirely — while the working directory happens to be a code repo — writes nothing into that repo. Ask where it should go, or keep the session in conversation. Never write into a repo the interview is not about.
+</TARGET-GATE>
+
+### Update CONTEXT.md inline
+
+When a term is resolved, update `CONTEXT.md` right there. Don't batch these up: capture them as they happen. Use the format in [CONTEXT-FORMAT.md](CONTEXT-FORMAT.md).
+
+`CONTEXT.md` should be totally devoid of implementation details. Do not treat `CONTEXT.md` as a spec, a scratch pad, or a repository for implementation decisions. It is a glossary and nothing else.
+
+### Offer ADRs sparingly
+
+Only offer to create an ADR when all three are true:
+
+1. **Hard to reverse**: the cost of changing your mind later is meaningful
+2. **Surprising without context**: a future reader will wonder "why did they do it this way?"
+3. **The result of a real trade-off**: there were genuine alternatives and you picked one for specific reasons
+
+If any of the three is missing, skip the ADR. Use the format in [ADR-FORMAT.md](ADR-FORMAT.md).
+
+## What the session does NOT capture
+
+The glossary is not a spec, and most settled answers earn neither a term nor an ADR — they exist only in this conversation. That is the known gap in this workflow, and it is where precise answers get lost: ordering guarantees, negative requirements, numeric defaults, and exact thresholds soften into vague prose if anything downstream re-derives them from memory instead of from the transcript.
+
+So when the frontier empties and the user confirms the shared understanding, do not clear the session. Ask before chaining — `superpowers:writing-plans` to commit the settled tree to a plan, or `superpowers:plan-delegate-review` to plan and build it — unless the user already authorized chaining for this request. Carry the exact values from the answers into the plan; re-read the plan against what the user actually said rather than assuming it captured them.
 
 ---
 
-Adapted from the `grilling` skill in [mattpocock/skills](https://github.com/mattpocock/skills) (MIT © 2026 Matt Pocock). The `grill-me` alias is folded into this skill's declared trigger rather than shipped separately.
+Adapted from the `grilling`, `grill-with-docs`, and `domain-modeling` skills in [mattpocock/skills](https://github.com/mattpocock/skills) (MIT © 2026 Matt Pocock). Upstream splits these three ways — a one-line `grill-with-docs` delegating to the other two — whose most-reported failure is partial loading: the interview runs, the writing half never loads, and the session leaves no paper trail. Folding them into one skill removes that failure mode.
