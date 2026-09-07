@@ -1,5 +1,16 @@
 # Superpowers Release Notes
 
+## v6.8.2 (2026-09-07)
+
+### Skills
+
+- `plan-delegate-review` and `delegating-to-codex` now default to GPT-6 Astra
+  with high reasoning for implementation, review, fixes, and resumed runs.
+  Explicit user model or effort choices still take precedence.
+- The standalone delegation and updater skills now live in `user-skills/`.
+  The updater installs them in both Codex homes and Claude Code so future
+  updates preserve the defaults.
+
 ## v6.8.1 (2026-09-01)
 
 ### Skills

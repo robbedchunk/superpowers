@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update Superpowers"
+  short_description: "Refresh Superpowers from robbedchunk/superpowers"
+  default_prompt: "Update superpowers."

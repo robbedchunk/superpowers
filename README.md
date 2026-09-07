@@ -228,7 +228,15 @@ After you explicitly ask to use Superpowers and approve chaining, a typical suit
 - **using-git-worktrees** - Parallel development branches
 - **finishing-a-development-branch** - Merge/PR decision workflow
 - **subagent-driven-development** - Dependency-scheduled parallel execution with bounded merge-gate reviews
-- **plan-delegate-review** - Fork-default delivery pipeline: plan-mode slices → codex Sol implementers → Claude-side simplify gate → three identically-prompted codex reviewers → coalesced findings → one validating fixer (declared-trigger opt-in: activates on plan mode for implementation work)
+- **plan-delegate-review** - Fork-default delivery pipeline: plan-mode slices → codex GPT-6 Astra high implementers → Claude-side simplify gate → three identically-prompted codex reviewers → coalesced findings → one validating fixer (declared-trigger opt-in: activates on plan mode for implementation work)
+
+This fork also maintains standalone `delegating-to-codex` and
+`update-superpowers` skills under `user-skills/`. Run
+`bash scripts/install-user-skills.sh` to install them in `~/.codex`,
+`~/.codex-a`, and `~/.claude`. The updater refreshes both the plugin and these
+standalone skills from `robbedchunk/superpowers`. Implementers, reviewers,
+fixers, and resumed Codex runs default to `gpt-6-astra` with
+`model_reasoning_effort=high`; explicit user choices override those defaults.
 
 **Meta**
 - **writing-skills** - Create new skills following best practices (includes testing methodology)
