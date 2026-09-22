@@ -1,6 +1,6 @@
 ---
 name: plan-delegate-review
-description: "Opt-in only: Use when the user explicitly opts into Superpowers for a plan-and-implement request, explicitly names superpowers:plan-delegate-review, or matches this skill's declared trigger — entering plan mode for implementation work, asking to plan and build a feature or fix, or saying 'the usual workflow', 'full loop', 'triple review', or 'spawn the codex reviewers' (a standing authorization recorded in this skill). Never auto-invoke outside those triggers. Pipeline: plan with slices mapped to PRs → codex GPT-6 Astra high implementers → per PR: simplify gate → three identically-prompted codex reviewers → coalesced findings → one validating fixer → land in dependency order."
+description: "Opt-in only: Use when the user explicitly opts into Superpowers for a plan-and-implement request, explicitly names superpowers:plan-delegate-review, or matches this skill's declared trigger — entering plan mode for implementation work, asking to plan and build a feature or fix, or saying 'the usual workflow', 'full loop', 'triple review', or 'spawn the codex reviewers' (a standing authorization recorded in this skill). Never auto-invoke outside those triggers. Pipeline: plan with slices mapped to PRs → implementers down a fixed ladder (Fable, then Opus, then codex GPT-6 Astra high; Astra for every seat on the Codex harness) → per PR: simplify gate → three identically-prompted codex reviewers → coalesced findings → one validating fixer → land in dependency order."
 ---
 
 <OPT-IN-BOUNDARY>
@@ -9,7 +9,7 @@ Use this workflow when the current request explicitly opts into Superpowers with
 
 # Plan → Delegate Slices → Simplify → Triple Review → Fix-Verify
 
-Five phases plus a simplify gate (2.5), in order; phases 2.5–5 run at least one full cycle per PR the plan declares (usually one PR) — re-entry rules repeat a cycle, never skip one. You (Claude) are the **dispatcher**: you plan, write every prompt, spawn every agent, coalesce, verify, and push — no one else pushes.
+Five phases plus a simplify gate (2.5), in order; phases 2.5–5 run at least one full cycle per PR the plan declares (usually one PR) — re-entry rules repeat a cycle, never skip one. You are the **dispatcher**: you plan, write every prompt, spawn every agent, coalesce, verify, and push — no one else pushes.
 
 **Announce at start:** "Using plan-delegate-review to run the full delivery pipeline."
 
@@ -30,14 +30,14 @@ Either way, research the repo until the plan has no placeholders, then write it 
 
 Work happens in task worktrees — primary checkouts stay read-only (`<repo>/.worktrees/<slug>`; follow the repo's worktree doc where one exists). Create one per declared PR, on that PR's declared branch, after plan approval and before phase 2.
 
-## Phase 2 — Delegate slices to codex GPT-6 Astra high
+## Phase 2 — Delegate slices down the implementer ladder
 
-Load `delegating-to-codex` (user-level skill) for the command template, flags, and background-run rules. Then, per slice, in dependency order (file-disjoint ready slices may run in parallel, each in its own worktree):
+Implementers are harness subagents (Agent tool) down a fixed ladder, and only availability moves a seat down it: `model: "fable"` by default; `model: "opus"` when Fable is unavailable (usage limit, model error at spawn); codex GPT-6 Astra high when no Claude subagent can be spawned at all — load `delegating-to-codex` (user-level skill) for the command template, flags, and background-run rules whenever a codex seat runs. Quality never changes the model: a slice that fails its acceptance checks is re-run on the same rung with the failure output. On the Codex harness (no Claude subagents), every implementer, simplifier, and fixer seat runs codex GPT-6 Astra high. Say which rung ran each slice. Then, per slice, in dependency order (file-disjoint ready slices may run in parallel, each in its own worktree):
 
-- Default model/effort for every implementer, reviewer, and fixer: `-m gpt-6-astra -c model_reasoning_effort=high`, matching `delegating-to-codex`. Keep this pair unless the user explicitly requests a different model or effort; task size or risk alone does not change the default.
-- Sandbox `workspace-write`, `--cd` the worktree of the PR named by the slice's `Lands in:`, background the run, ≥600s timeout.
+- Only an explicit user request changes a rung's model or effort; task size or risk alone does not. Every codex seat — a ladder fallback, the reviewers, anything on the Codex harness — is `-m gpt-6-astra -c model_reasoning_effort=high`, matching `delegating-to-codex`.
+- Run in the worktree of the PR named by the slice's `Lands in:` (a codex seat: sandbox `workspace-write`, `--cd` that worktree, background the run, ≥600s timeout).
 - The slice prompt is self-contained: the task brief verbatim (the implementer never sees the whole plan), Consumes/Produces contracts, repo conventions, and acceptance checks it must actually run. Open with the subagent-dispatch line ("You are a subagent dispatched to execute this one fully-specified task; skip startup/plugin skills."); add the missing-target guard ("If a named file/path/target doesn't exist, stop and report — do not substitute.") and the YAGNI clause ("Build exactly what the contract and acceptance checks require — no speculative abstractions, config surface, or indirection; three similar lines beat one premature helper.").
-- On completion, verify like a dispatcher: read the `-o` final message against the actual diff and confirm the acceptance checks *ran* (output present).
+- On completion, verify like a dispatcher: read the final report (the agent's message, or a codex seat's `-o` file) against the actual diff and confirm the acceptance checks *ran* (output present).
 
 ## Phase 2.5 — Simplify gate
 
@@ -45,7 +45,7 @@ Phases 2.5–5 run as a full cycle per PR the plan declares, in dependency order
 
 Two invariants and one license govern the cycles. No PR's branch is pushed before phases 2.5–4 have run on it; the only commits allowed after its reviewers run are fixer commits, which phase 5 validates (a ballooned fix goes back to review per phase 5). No review's diff spans more than one PR's changes — the sole exception is the plan-declared stack audit (phase 5), which supplements per-PR cycles, never replaces them. While one PR is in phases 3–5, implementing a later PR's slices in its own worktree is allowed.
 
-With the entry conditions met — before any review brief is written — spawn ONE harness `code-simplifier` agent (Agent tool) on the PR's worktree. Deliberately Claude-side, not another codex: Astra judging Astra's abstractions shares the priors that produced them. Its prompt pins:
+With the entry conditions met — before any review brief is written — spawn ONE harness `code-simplifier` agent (Agent tool) on the PR's worktree. Deliberately a fresh context with a deletion-biased brief, never the implementer's session: the agent that built an abstraction defends it, and the cross-model check is phase 3's job. Its prompt pins:
 
 - **Scope:** only code this PR introduced (`git diff <base>...HEAD`) — same scope rule as the reviewers.
 - **Frozen:** Consumes/Produces contracts and public API. No behavior change.
@@ -79,14 +79,14 @@ SP=<scratchpad>; codex exec --cd <worktree> --skip-git-repo-check \
 ```
 
 - Default all three reviewers to GPT-6 Astra with `high` reasoning, including money paths, concurrency, and security. Apply a different model or effort only when the user explicitly requests it.
-- Run reviewer 3 as `codex-a exec` (second account) to spread rate limits.
+- Run reviewer 2 as `codex-a exec` and reviewer 3 as `codex-b exec` (separate accounts) to spread rate limits.
 - Wait via task notifications or one Monitor on all three — never `sleep && tail` polling. Work on something else meanwhile (e.g. the PR description — read the owning repo/workspace PR-description rules before drafting; in hawkeye-master that's docs/operating-scope.md "Pull Request Descriptions": "## What this does, in plain English" first, then the collapsed Code mapping details block, then the technical description).
 
 ## Phase 4 — Coalesce, then one fixer that validates and fixes
 
 **Coalesce yourself** (plain reading, not another agent): dedupe the three reports into lettered findings A, B, C… with attribution ("reviewers 1 and 3", "reviewer 2 only") and file:line. Attribution matters — a 3/3 finding and a 1/3 finding deserve different skepticism.
 
-Then spawn ONE fixer/verifier codex (`-m gpt-6-astra -c model_reasoning_effort=high` by default, honoring any user-requested override, `--sandbox workspace-write`, `--add-dir` for any sibling worktree/`.git` it must reach). Its prompt has three parts:
+Then spawn ONE fixer/verifier down the phase 2 ladder (Fable, then Opus, then codex GPT-6 Astra high; a codex seat gets `--sandbox workspace-write` and `--add-dir` for any sibling worktree/`.git` it must reach). Its prompt has three parts:
 
 - **PART 1 — review context**: the reviewer prompt's context verbatim, so the fixer judges findings with the same information.
 - **PART 2 — coalesced findings**: the lettered list, attributions included.
@@ -104,8 +104,8 @@ Landing a PR does not end the pipeline: if the plan declares more PRs, the next 
 
 - A finding invalidates an approved plan decision (a Consumes/Produces contract, a Global Constraint, an exact requirement, contract code, or the PR topology itself): stop the cycle, surface it to the user, amend the plan only with their approval, then re-enter every affected PR at phase 2 — slices already implemented against the old contract get re-verified against the amended one.
 - Simplify gate breaks an acceptance check, or its report doesn't match its diff: revert the simplifier's commit(s) and proceed to review — the gate is optional, the review isn't.
-- No `code-simplifier` agent type in this harness: use a general-purpose agent with the same pinned prompt; if no harness agents at all, skip the gate rather than handing it to Astra.
+- No `code-simplifier` agent type in this harness: use a general-purpose agent with the same pinned prompt; on the Codex harness, run the gate as codex GPT-6 Astra high with that prompt; with no agents at all, skip the gate — the review isn't optional, the gate is.
 - A safeguard refusal on authorized defensive work: clarify the authorized scope per `delegating-to-codex`; tell the user it happened. Do not switch models to bypass a refusal.
-- Rate-limited account: rerun the identical command on the other account (`codex` ↔ `codex-a`); if both are capped, fall back to harness Agent-tool reviewers with the same prompt rather than stalling.
+- Rate-limited account: rerun the identical command on another account (`codex`, `codex-a`, `codex-b`); if all are capped, fall back to harness Agent-tool reviewers with the same prompt rather than stalling.
 - A reviewer that returns garbage or dies: rerun it once; proceed with two independent reports only if the user agrees.
 - No codex CLI on this machine at all: run the same pipeline with harness subagents (three Agent-tool reviewers with the identical brief, one fixer agent) — the prompts, not the binary, are the workflow.
