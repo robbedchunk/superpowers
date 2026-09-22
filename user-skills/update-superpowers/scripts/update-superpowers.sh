@@ -4,7 +4,7 @@ set -euo pipefail
 readonly marketplace="superpowers-dev"
 readonly plugin="superpowers@${marketplace}"
 readonly expected_source="https://github.com/robbedchunk/superpowers.git"
-readonly homes=("${HOME}/.codex" "${HOME}/.codex-a")
+readonly homes=("${HOME}/.codex" "${HOME}/.codex-a" "${HOME}/.codex-b")
 
 for codex_home in "${homes[@]}"; do
   if [[ ! -d "${codex_home}" ]]; then
@@ -66,7 +66,7 @@ claude plugin marketplace update "${marketplace}"
 claude plugin uninstall "${plugin}"
 claude plugin install "${plugin}" --scope user
 
-printf '\nUpdating standalone skills in both Codex homes and Claude Code\n'
+printf '\nUpdating standalone skills in all Codex homes and Claude Code\n'
 bash "${HOME}/.claude/plugins/marketplaces/${marketplace}/scripts/install-user-skills.sh"
 
-printf '\nSuperpowers updated from %s in both Codex homes and Claude Code.\n' "${expected_source}"
+printf '\nSuperpowers updated from %s in all Codex homes and Claude Code.\n' "${expected_source}"

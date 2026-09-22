@@ -1,5 +1,16 @@
 # Superpowers Release Notes
 
+## v6.9.0 (2026-09-22)
+
+### Skills
+
+- **New `full-stack-split`: a two-track pipeline for features that ship UI and API together.** The design conversation exits into one versioned API contract (`docs/superpowers/specs/YYYY-MM-DD-<feature>-contract.md`, with a change log) instead of a plan; that contract is the only thing the tracks share. A frontend agent then builds the real UI in the existing app on mocked responses — env-flagged fixtures typed against the contract, every state reachable by URL param, served on localhost for the user's sign-off, fix rounds sent to the same agent — while the backend runs `plan-delegate-review` unchanged. Contract gaps found by either track become change-log entries, never silent edits. When the backend's final PR is pushed and the mock is signed off, one integration agent drift-checks the landed routes against the contract, swaps fixtures for real calls without touching the approved design, verifies every state for real, and one codex reviewer checks the wiring. Declared trigger: "full-stack split", "split workflow", "split this front and back". Invoking it is the explicit selection of the user-level `impeccable` and `emil-design-eng` skills (plus `animate` when the surface has motion) for the frontend track only. `brainstorming` gains the matching exception to its writing-plans terminal state; `using-superpowers` lists the third declared trigger.
+- **`plan-delegate-review` implementers now run down a fixed ladder instead of defaulting to codex.** Implementers, the simplify gate, and the fixer are harness subagents: Fable by default, Opus when Fable is unavailable (usage limit, model error at spawn), codex GPT-6 Astra high only when no Claude subagent can be spawned at all. Availability is the only thing that moves a seat down the ladder; quality never changes the model. On the Codex harness every seat runs Astra high. The three reviewers stay codex GPT-6 Astra high, where a different model's independent eyes are the point. The simplify gate's rationale is restated for the new shape — a fresh context with a deletion-biased brief, never the implementer's session — and on the Codex harness it runs as Astra rather than being skipped.
+
+### Tooling
+
+- **The updater and the user-skill installer now cover a third Codex home, `~/.codex-b`.** `update-superpowers` refreshes and reinstalls the plugin in `~/.codex`, `~/.codex-a`, `~/.codex-b`, and Claude Code, and `install-user-skills.sh` installs the two standalone skills in all four homes. `plan-delegate-review` now spreads its three reviewers across the three accounts, and `delegating-to-codex`'s rate-limit fallback rotates through all three before falling back to harness agents.
+
 ## v6.8.2 (2026-09-07)
 
 ### Skills
