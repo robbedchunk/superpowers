@@ -228,14 +228,15 @@ After you explicitly ask to use Superpowers and approve chaining, a typical suit
 - **using-git-worktrees** - Parallel development branches
 - **finishing-a-development-branch** - Merge/PR decision workflow
 - **subagent-driven-development** - Dependency-scheduled parallel execution with bounded merge-gate reviews
-- **plan-delegate-review** - Fork-default delivery pipeline: plan-mode slices → codex GPT-6 Astra high implementers → Claude-side simplify gate → three identically-prompted codex reviewers → coalesced findings → one validating fixer (declared-trigger opt-in: activates on plan mode for implementation work)
+- **plan-delegate-review** - Fork-default delivery pipeline: plan-mode slices → implementers down a fixed ladder (Fable, then Opus, then codex GPT-6 Astra high; Astra for every seat on the Codex harness) → fresh-context simplify gate → three identically-prompted codex reviewers → coalesced findings → one validating fixer (declared-trigger opt-in: activates on plan mode for implementation work)
+- **full-stack-split** - Two-track delivery for features that ship UI and API together: design → one versioned API contract → a frontend agent builds the real UI on mocked data for the user's sign-off (Impeccable + Emil's skills, relayed as an explicit selection) while the backend runs plan-delegate-review → one integration agent swaps the mocks for the landed API → one codex reviewer (declared-trigger opt-in: activates on "full-stack split", "split workflow", "split this front and back")
 
 This fork also maintains standalone `delegating-to-codex` and
 `update-superpowers` skills under `user-skills/`. Run
 `bash scripts/install-user-skills.sh` to install them in `~/.codex`,
-`~/.codex-a`, and `~/.claude`. The updater refreshes both the plugin and these
-standalone skills from `robbedchunk/superpowers`. Implementers, reviewers,
-fixers, and resumed Codex runs default to `gpt-6-astra` with
+`~/.codex-a`, `~/.codex-b`, and `~/.claude`. The updater refreshes both the plugin and these
+standalone skills from `robbedchunk/superpowers`. Every codex seat — reviewers,
+ladder fallbacks, and resumed Codex runs — defaults to `gpt-6-astra` with
 `model_reasoning_effort=high`; explicit user choices override those defaults.
 
 **Meta**

@@ -30,7 +30,7 @@ You MUST create a task for each of these items and complete them in order:
 3. **Propose 2-3 approaches** — with trade-offs and your recommendation
 4. **Present design** — in sections scaled to their complexity, get user approval after each section
 5. **Confirm the full design is approved** — every section signed off in conversation; resolve any open contradictions between sections now
-6. **Transition to implementation** — invoke writing-plans immediately, in this same turn. The plan is the single written artifact: its Design section records the chosen approach, the rejected alternatives from step 3 (one line each, with why), and the cross-cutting decisions (data flow, error handling, testing).
+6. **Transition to implementation** — invoke writing-plans immediately, in this same turn. The plan is the single written artifact: its Design section records the chosen approach, the rejected alternatives from step 3 (one line each, with why), and the cross-cutting decisions (data flow, error handling, testing). Exception: inside `superpowers:full-stack-split`, the transition is that skill's phase 0 contract; writing-plans runs later, inside its backend track.
 
 ## Process Flow
 
@@ -52,7 +52,7 @@ digraph brainstorming {
 }
 ```
 
-**The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans.
+**The terminal state is invoking writing-plans.** Do NOT invoke frontend-design, mcp-builder, or any other implementation skill. The ONLY skill you invoke after brainstorming is writing-plans. The one exception is a brainstorm run inside `superpowers:full-stack-split`: its terminal state is that skill's phase 0 contract, which the frontend track and the backend plan both consume.
 
 ## The Process
 
@@ -101,7 +101,7 @@ The approved conversation IS the design record — no separate spec document get
 2. **Internal consistency:** Do any approved sections contradict each other? Does the architecture match the feature descriptions?
 3. **Ambiguity check:** Could any requirement be interpreted two different ways? Pick one with the user and make it explicit — writing-plans will copy exact values from this conversation verbatim.
 
-Then invoke the writing-plans skill immediately, in this same turn — a design that exists only in conversation is one compaction away from gone; the plan, whose Design section records the chosen approach, rejected alternatives, and cross-cutting decisions, is what makes it durable and committed. Do NOT invoke any other skill. writing-plans is the next step.
+Then invoke the writing-plans skill immediately, in this same turn — a design that exists only in conversation is one compaction away from gone; the plan, whose Design section records the chosen approach, rejected alternatives, and cross-cutting decisions, is what makes it durable and committed. Do NOT invoke any other skill. writing-plans is the next step (inside `superpowers:full-stack-split`, write that skill's contract first; the backend plan follows in its track).
 
 ## Key Principles
 
