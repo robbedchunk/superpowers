@@ -79,11 +79,9 @@ Read the `-o` final message against the actual diff and confirm that the accepta
 
 Keep `--sandbox workspace-write` for implementation and `--sandbox read-only` for reviewers; do not escalate a delegated run to `danger-full-access`.
 
-## Rate limits — three accounts, then the harness
+## Rate limits — fall back to the harness
 
-`codex`, `codex-a`, and `codex-b` are independent installs on separate OpenAI accounts (`codex-a` and `codex-b` are shell wrappers that set `CODEX_HOME=~/.codex-a` and `~/.codex-b`; distinct auth verified). On a rate-limit/usage-cap error, rerun the identical command on another account — they take the exact same flag set (verified e2e on 0.144.1 for `codex-a`). If all three accounts are capped, don't wait out the window: fall back to the harness's own agents (Agent tool) for the task.
-
-Caveat: sessions are per-`CODEX_HOME`, so a run started on `codex` cannot be `resume`d on `codex-a` or `codex-b` — a mid-conversation account switch means a fresh, self-contained prompt.
+On a rate-limit/usage-cap error from `codex`, don't wait out the window: fall back to the harness's own agents (Agent tool) for the task.
 
 ## Common mistakes
 
