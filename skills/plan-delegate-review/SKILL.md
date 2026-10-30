@@ -79,7 +79,6 @@ SP=<scratchpad>; codex exec --cd <worktree> --skip-git-repo-check \
 ```
 
 - Default all three reviewers to GPT-6 Astra with `high` reasoning, including money paths, concurrency, and security. Apply a different model or effort only when the user explicitly requests it.
-- Run reviewer 2 as `codex-a exec` and reviewer 3 as `codex-b exec` (separate accounts) to spread rate limits.
 - Wait via task notifications or one Monitor on all three — never `sleep && tail` polling. Work on something else meanwhile (e.g. the PR description — read the owning repo/workspace PR-description rules before drafting; in hawkeye-master that's docs/operating-scope.md "Pull Request Descriptions": "## What this does, in plain English" first, then the collapsed Code mapping details block, then the technical description).
 
 ## Phase 4 — Coalesce, then one fixer that validates and fixes
@@ -106,6 +105,6 @@ Landing a PR does not end the pipeline: if the plan declares more PRs, the next 
 - Simplify gate breaks an acceptance check, or its report doesn't match its diff: revert the simplifier's commit(s) and proceed to review — the gate is optional, the review isn't.
 - No `code-simplifier` agent type in this harness: use a general-purpose agent with the same pinned prompt; on the Codex harness, run the gate as codex GPT-6 Astra high with that prompt; with no agents at all, skip the gate — the review isn't optional, the gate is.
 - A safeguard refusal on authorized defensive work: clarify the authorized scope per `delegating-to-codex`; tell the user it happened. Do not switch models to bypass a refusal.
-- Rate-limited account: rerun the identical command on another account (`codex`, `codex-a`, `codex-b`); if all are capped, fall back to harness Agent-tool reviewers with the same prompt rather than stalling.
+- Rate-limited `codex`: fall back to harness Agent-tool reviewers with the same prompt rather than stalling.
 - A reviewer that returns garbage or dies: rerun it once; proceed with two independent reports only if the user agrees.
 - No codex CLI on this machine at all: run the same pipeline with harness subagents (three Agent-tool reviewers with the identical brief, one fixer agent) — the prompts, not the binary, are the workflow.

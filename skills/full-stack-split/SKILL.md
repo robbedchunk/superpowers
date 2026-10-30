@@ -79,6 +79,6 @@ The pipeline ends when the backend PRs and the frontend PR are pushed and open �
 - The design settles on no screen after all (API-only, or a change with no UI surface): drop the split, run plan-delegate-review alone, and say so.
 - The backend lands before the mock is signed off: the join waits for the sign-off, not the other way around; never wire an unapproved UI.
 - No way to continue the agent (no SendMessage, no codex session to resume): respawn with the full prior report plus the fix list as context.
-- Reviewer failures — a rate-limited account, a reviewer that dies or returns garbage — follow plan-delegate-review's failure handling: another account, one rerun, a harness reviewer as the last resort.
+- Reviewer failures — a rate-limited `codex`, a reviewer that dies or returns garbage — follow plan-delegate-review's failure handling: one rerun, a harness reviewer as the last resort.
 - No codex CLI: the join's reviewer runs as a harness subagent with the same brief.
 - No harness subagents at all: the mechanics are optional — any executor that can run one agent per track and one reviewer follows this skill; the prompts are the workflow.

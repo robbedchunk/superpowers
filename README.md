@@ -233,8 +233,8 @@ After you explicitly ask to use Superpowers and approve chaining, a typical suit
 
 This fork also maintains standalone `delegating-to-codex` and
 `update-superpowers` skills under `user-skills/`. Run
-`bash scripts/install-user-skills.sh` to install them in `~/.codex`,
-`~/.codex-a`, `~/.codex-b`, and `~/.claude`. The updater refreshes both the plugin and these
+`bash scripts/install-user-skills.sh` to install them in `~/.codex` and
+`~/.claude`. The updater refreshes both the plugin and these
 standalone skills from `robbedchunk/superpowers`. Every codex seat — reviewers,
 ladder fallbacks, and resumed Codex runs — defaults to `gpt-6-astra` with
 `model_reasoning_effort=high`; explicit user choices override those defaults.
